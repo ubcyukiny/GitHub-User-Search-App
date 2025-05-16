@@ -1,34 +1,27 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [darkMode, setDarkMode] = useState(true);
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className="px-4 py-8">
+        <div className="header flex flex-row justify-between">
+          <h1 className="logo text-natural-700 font-bold">devfinder</h1>
+          <div>Dark</div>
+        </div>
+        <div className="searchbar"></div>
+        <div className="results">
+          <div className="userPFP"></div>
+          <div className="userInfo">
+            <div className="userName"></div>
+            <div className="userIntro"></div>
+            <div className="commits"></div>
+            <div className="links"></div>
+          </div>
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <h1 class="font-bold text-amber-300 underline">Hello world!</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   );
 }
