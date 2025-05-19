@@ -1,33 +1,43 @@
 import { useState } from "react";
 import "./App.css";
+import {
+  SunIcon,
+  MoonIcon,
+  CompanyIcon,
+  LocationIcon,
+  TwitterIcon,
+  WebsiteIcon,
+  SearchIcon,
+} from "./components/icons/";
 
 function App() {
-  const [darkMode, setDarkMode] = useState(true);
-  const [error, setError] = useState(true);
+  const [theme, setTheme] = useState("dark");
+  const [error, setError] = useState(null);
 
   return (
     <div className="flex w-full bg-neutral-100 px-4 py-8">
       <div className="flex w-full flex-col gap-8">
         <div className="flex flex-row content-center justify-between">
-          <h1 className="logo text-natural-700 font-bold">devfinder</h1>
-          <div className="flex flex-row items-center gap-3 hover:cursor-pointer">
-            <p className="textPreset8 text-neutral-500">DARK</p>
-            <img className="size-5" src="/assets/icon-moon.svg" alt="moon" />
+          <h1 className="logo text-natural-700 font-bold select-none">
+            devfinder
+          </h1>
+          <div className="flex flex-row items-center gap-3 rounded-full bg-slate-200 p-2 hover:cursor-pointer">
+            <SunIcon className="text-neutral-500" />
+            <MoonIcon className="text-neutral-500" />
           </div>
         </div>
 
-        <div className="flex flex-row items-center justify-between gap-2 rounded-2xl bg-white px-3 py-2 shadow-xl focus:outline-blue-500">
-          <div className="flex items-center gap-2">
-            <img
-              className="size-5"
-              src="/assets/icon-search.svg"
-              alt="lookup"
+        <div className="flex w-full flex-row items-center justify-between gap-2 rounded-2xl bg-white px-3 py-2 shadow-xl focus:ring-2 focus:ring-blue-500">
+          <div className="flex flex-grow items-center gap-2">
+            <SearchIcon className="text-blue-500" />
+            <input
+              type="text"
+              className="textPreset3Mobile w-full bg-transparent text-neutral-500 placeholder-neutral-500 outline-none"
+              maxLength={39}
+              placeholder="Search GitHub username..."
             />
-            <p className="textPreset3Mobile text-neutral-500">
-              Search GitHub username...
-            </p>
           </div>
-          <button className="textPreset5 rounded-[10px] bg-blue-500 px-5 py-3 text-white hover:cursor-pointer hover:bg-blue-300">
+          <button className="textPreset5 rounded-[10px] bg-blue-500 px-5 py-3 text-white hover:cursor-pointer hover:bg-blue-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none">
             Search
           </button>
         </div>
@@ -83,37 +93,26 @@ function App() {
               </div>
               <div className="flex flex-col gap-4">
                 <div className="flex gap-4">
-                  <img
-                    className="h-5 w-3.5 fill-neutral-900"
-                    src="/assets/icon-location.svg"
-                    alt="icon-location"
-                  />
+                  <LocationIcon className="text-neutral-900" />
                   <p className="textPreset6 text-neutral-500">San Francisco</p>
                 </div>
                 <div className="flex gap-4">
-                  <img
-                    className="h-4 w-5 fill-neutral-900"
-                    src="/assets/icon-twitter.svg"
-                    alt="icon-twitter"
-                  />
+                  <TwitterIcon className="text-neutral-900" />
                   <p className="textPreset6 text-neutral-500">Not Available</p>
                 </div>
                 <div className="flex gap-4">
-                  <img
-                    className="size-5 fill-neutral-900"
-                    src="/assets/icon-website.svg"
-                    alt="icon-website"
-                  />
-                  <p className="textPreset6 text-neutral-500">
+                  <WebsiteIcon className="text-neutral-900" />
+                  <a
+                    href="https://github.blog"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="textPreset6 rounded-md text-neutral-500 hover:cursor-pointer hover:underline hover:underline-offset-1 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+                  >
                     https://github.blog
-                  </p>
+                  </a>
                 </div>
                 <div className="flex gap-4">
-                  <img
-                    className="size-5 fill-neutral-900"
-                    src="/assets/icon-company.svg"
-                    alt="icon-company"
-                  />
+                  <CompanyIcon className="text-neutral-900" />
                   <p className="textPreset6 text-neutral-500">@github</p>
                 </div>
               </div>
