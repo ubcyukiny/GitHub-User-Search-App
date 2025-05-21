@@ -7,7 +7,6 @@
 }
 
 @theme {
-  /* neutral */
   --color-neutral-0: #ffffff;
   --color-neutral-100: #f6f8ff;
   --color-neutral-200: #90a4d4;
@@ -17,11 +16,9 @@
   --color-neutral-800: #1e2a47;
   --color-neutral-900: #141d2f;
 
-  /* blue */
   --color-blue-300: #60abff;
   --color-blue-500: #0079ff;
 
-  /* red */
   --color-red-500: #f74646;
 }
 

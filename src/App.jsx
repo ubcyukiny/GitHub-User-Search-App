@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import {
   SunIcon,
@@ -8,25 +8,72 @@ import {
   TwitterIcon,
   WebsiteIcon,
   SearchIcon,
+  SystemIcon,
 } from "./components/icons/";
 
 function App() {
   const [error, setError] = useState(null);
+  const [theme, setTheme] = useState("system");
+
+  const getPreferredTheme = () => {
+    if (typeof window !== "undefined" && window.matchMedia) {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    }
+    return "light";
+  };
+
+  useEffect(() => {
+    const resolvedTheme = theme === "system" ? getPreferredTheme() : theme;
+    document.documentElement.classList.toggle("dark", resolvedTheme === "dark");
+  }, [theme]);
+
+  const isActive = (value) => theme === value;
 
   return (
     <div className="flex w-full bg-neutral-100 px-4 py-8 dark:bg-neutral-900">
       <div className="flex w-full flex-col gap-8">
-        <div className="flex flex-row content-center justify-between">
-          <h1 className="logo text-natural-700 font-bold select-none dark:text-white">
+        <div className="flex flex-row items-center justify-between">
+          <h1 className="logo font-bold text-neutral-950 select-none dark:text-white">
             devfinder
           </h1>
-          <div className="flex flex-row items-center gap-3 rounded-full bg-slate-200 p-2 hover:cursor-pointer">
-            {/* do a headlessui switch incorportate
-            https://headlessui.com/react/switch
-            https://dribbble.com/shots/7635203-Light-Dark-mode-toggle-switcher
-            */}
-            <SunIcon className="text-neutral-500" />
-            <MoonIcon className="text-neutral-500" />
+          <div className="inline-grid grid-cols-3 gap-0.5 rounded-full bg-slate-200 p-0.5 dark:bg-neutral-700">
+            <button
+              onClick={() => setTheme("system")}
+              className={`flex aspect-square w-9 items-center justify-center rounded-full transition-colors ${
+                isActive("system")
+                  ? "bg-white text-black ring ring-gray-300 dark:bg-gray-600 dark:text-white dark:ring-white/20"
+                  : "text-gray-500 hover:bg-gray-100 dark:text-white/50 dark:hover:bg-white/10"
+              }`}
+              title="Use system theme"
+            >
+              <SystemIcon className="size-5" />
+            </button>
+
+            <button
+              onClick={() => setTheme("light")}
+              className={`flex aspect-square w-9 items-center justify-center rounded-full transition-colors ${
+                isActive("light")
+                  ? "bg-white text-black ring ring-gray-300"
+                  : "text-gray-500 hover:bg-gray-100 dark:text-white/50 dark:hover:bg-white/10"
+              }`}
+              title="Light mode"
+            >
+              <SunIcon className="size-5" />
+            </button>
+
+            <button
+              onClick={() => setTheme("dark")}
+              className={`flex aspect-square w-9 items-center justify-center rounded-full transition-colors ${
+                isActive("dark")
+                  ? "bg-gray-600 text-white ring ring-white/10"
+                  : "text-gray-500 hover:bg-gray-100 dark:text-white/50 dark:hover:bg-white/10"
+              }`}
+              title="Dark mode"
+            >
+              <MoonIcon className="size-5" />
+            </button>
           </div>
         </div>
 
@@ -35,7 +82,7 @@ function App() {
             <SearchIcon className="text-blue-500 dark:text-blue-300" />
             <input
               type="text"
-              className="textPreset3Mobile dark:placeholder-neutral-0 -w-full bg-transparent text-neutral-500 placeholder-neutral-500 opacity-70 outline-none"
+              className="textPreset3Mobile text-neutral- dark:placeholder-neutral-0 -w-full bg-transparent text-neutral-500 placeholder-neutral-500 opacity-70 outline-none"
               maxLength={39}
               placeholder="Search GitHub username..."
             />
@@ -81,25 +128,33 @@ function App() {
                   <p className="textPreset7 text-neutral-500 dark:text-white">
                     Repos
                   </p>
-                  <p className="textPreset2">8</p>
+                  <p className="textPreset2 text-neutral-500 dark:text-white">
+                    8
+                  </p>
                 </div>
                 <div className="flex flex-col gap-1">
                   <p className="textPreset7 text-neutral-500 dark:text-white">
                     Followers
                   </p>
-                  <p className="textPreset2">3938</p>
+                  <p className="textPreset2 text-neutral-500 dark:text-white">
+                    3938
+                  </p>
                 </div>
                 <div className="flex flex-col gap-1">
                   <p className="textPreset7 text-neutral-500 dark:text-white">
                     Following
                   </p>
-                  <p className="textPreset2">9</p>
+                  <p className="textPreset2 text-neutral-500 dark:text-white">
+                    9
+                  </p>
                 </div>
                 <div className="flex flex-col gap-1">
                   <p className="textPreset7 text-neutral-500 dark:text-white">
                     Stars
                   </p>
-                  <p className="textPreset2">25</p>
+                  <p className="textPreset2 text-neutral-500 dark:text-white">
+                    25
+                  </p>
                 </div>
               </div>
               <div className="flex flex-col gap-4 dark:text-white">
