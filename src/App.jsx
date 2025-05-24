@@ -5,7 +5,7 @@ import ThemeToggle from "./components/ThemeToggle";
 import SearchBar from "./components/SearchBar";
 import UserCard from "./components/UserCard";
 import ErrorCard from "./components/ErrorCard";
-import { fetchGitHubUser } from "./api/getUser";
+import { getUser, getRepos, getRepoLanguages } from "./api/githubAPI";
 
 function App() {
   const [error, setError] = useState(null);
@@ -26,13 +26,33 @@ function App() {
     if (!username) return;
 
     try {
-      const res = await fetchGitHubUser(username);
-      console.log("Fetched GitHub user:", res.data);
+      const res = await getUser(username);
       setUserData(res.data);
       setError(false);
     } catch (err) {
       setUserData(null);
       setError(true);
+    }
+    try {
+      const repoRes = await getRepos(username);
+    } catch (err) {
+      console.error("Repo fetch failed:", err);
+    }
+
+    const topRepos = repoRes.slice(0, 10);
+    const languageTotals = {};
+
+    for (const repo of topRepos) {
+      try {
+        const res = await getRepoLanguages(repoRes.owner.login, repoRes.name);
+        const langs = res.data;
+
+        for (const [lang, bytes] of Object.entries(langs)) {
+          languageTotals[lang] = (languageTotals[lang] || 0) + bytes;
+        }
+      } catch (err) {
+        console.error(`Error fetching languages for ${repoRes.name}`, err);
+      }
     }
   };
 
@@ -57,7 +77,7 @@ function App() {
   };
 
   return (
-    <div className="flex w-full bg-neutral-100 px-4 py-8 sm:gap-2.5 sm:px-8 sm:py-10 lg:gap-2.5 lg:px-[180px] lg:py-[130px] dark:bg-neutral-900">
+    <div className="flex w-full max-w-7xl bg-neutral-100 px-4 py-8 md:gap-2.5 md:px-8 md:py-10 lg:gap-2.5 lg:px-[180px] lg:py-[130px] xl:mx-auto xl:px-36 dark:bg-neutral-900">
       <div className="flex w-full flex-col gap-8">
         <div className="flex flex-row items-center justify-between">
           <Logo />

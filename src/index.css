@@ -6,22 +6,6 @@
   }
 }
 
-@theme {
-  --color-neutral-0: #ffffff;
-  --color-neutral-100: #f6f8ff;
-  --color-neutral-200: #90a4d4;
-  --color-neutral-300: #697c9a;
-  --color-neutral-500: #4b6a9b;
-  --color-neutral-700: #2b3442;
-  --color-neutral-800: #1e2a47;
-  --color-neutral-900: #141d2f;
-
-  --color-blue-300: #60abff;
-  --color-blue-500: #0079ff;
-
-  --color-red-500: #f74646;
-}
-
 .logo {
   font-size: 26px;
   line-height: 100%;
