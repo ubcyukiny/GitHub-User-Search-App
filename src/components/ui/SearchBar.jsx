@@ -1,4 +1,4 @@
-import { SearchIcon } from "./icons";
+import { SearchIcon } from "../icons";
 
 function SearchBar({ onSearch, username, setUsername, error }) {
   return (

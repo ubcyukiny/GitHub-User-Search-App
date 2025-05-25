@@ -1,4 +1,4 @@
-import { CompanyIcon, LocationIcon, TwitterIcon, WebsiteIcon } from "./icons";
+import { CompanyIcon, LocationIcon, TwitterIcon, WebsiteIcon } from "../icons";
 
 function UserCard({ userData }) {
   return (

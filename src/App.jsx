@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import Logo from "./components/Logo";
-import ThemeToggle from "./components/ThemeToggle";
-import SearchBar from "./components/SearchBar";
-import UserCard from "./components/UserCard";
-import ErrorCard from "./components/ErrorCard";
+import Logo from "./components/ui/Logo";
+import ThemeToggle from "./components/ui/ThemeToggle";
+import SearchBar from "./components/ui/SearchBar";
+import UserCard from "./components/ui/UserCard";
+import ErrorCard from "./components/ui/ErrorCard";
 import { getUser, getRepos, getRepoLanguages } from "./api/githubAPI";
+import BarChart from "./components/D3/BarChart";
 
 function App() {
   const [error, setError] = useState(null);
   const [theme, setTheme] = useState("system");
   const [username, setUsername] = useState("");
   const [userData, setUserData] = useState(null);
+  const [userChart, setUserChart] = useState(null);
 
   const getPreferredTheme = () => {
     if (typeof window !== "undefined" && window.matchMedia) {
@@ -33,27 +35,40 @@ function App() {
       setUserData(null);
       setError(true);
     }
+    let topRepos;
     try {
       const repoRes = await getRepos(username);
+      console.log("userRepos: ", repoRes);
+      topRepos = repoRes.data.slice(0, 10);
+      console.log(topRepos);
     } catch (err) {
       console.error("Repo fetch failed:", err);
     }
 
-    const topRepos = repoRes.slice(0, 10);
     const languageTotals = {};
 
     for (const repo of topRepos) {
       try {
-        const res = await getRepoLanguages(repoRes.owner.login, repoRes.name);
+        const res = await getRepoLanguages(repo.owner.login, repo.name);
         const langs = res.data;
 
         for (const [lang, bytes] of Object.entries(langs)) {
           languageTotals[lang] = (languageTotals[lang] || 0) + bytes;
         }
       } catch (err) {
-        console.error(`Error fetching languages for ${repoRes.name}`, err);
+        console.error(`Error fetching languages for ${repo.name}`, err);
       }
     }
+    console.log(languageTotals);
+    const chartData = Object.entries(languageTotals).map(
+      ([language, bytes]) => ({
+        language,
+        bytes,
+      }),
+    );
+
+    console.log(chartData);
+    setUserChart(chartData);
   };
 
   useEffect(() => {
@@ -76,6 +91,33 @@ function App() {
     company: "github",
   };
 
+  const dummyChart = [
+    {
+      language: "CSS",
+      bytes: 15909,
+    },
+    {
+      language: "HTML",
+      bytes: 6611,
+    },
+    {
+      language: "JavaScript",
+      bytes: 105412,
+    },
+    {
+      language: "Prolog",
+      bytes: 4905,
+    },
+    {
+      language: "PHP",
+      bytes: 32075,
+    },
+    {
+      language: "Python",
+      bytes: 2966,
+    },
+  ];
+
   return (
     <div className="flex w-full max-w-7xl bg-neutral-100 px-4 py-8 md:gap-2.5 md:px-8 md:py-10 lg:gap-2.5 lg:px-[180px] lg:py-[130px] xl:mx-auto xl:px-36 dark:bg-neutral-900">
       <div className="flex w-full flex-col gap-8">
@@ -96,6 +138,13 @@ function App() {
         ) : (
           <UserCard userData={dummyUser} />
         )}
+        {error ? (
+          <ErrorCard error={error} />
+        ) : userData ? (
+          <BarChart data={userChart} />
+        ) : (
+          <BarChart data={dummyChart} />
+        )}{" "}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { SystemIcon, MoonIcon, SunIcon } from "./icons";
+import { SystemIcon, MoonIcon, SunIcon } from "../icons";
 function ThemeToggle({ theme, setTheme }) {
   const isActive = (value) => theme === value;
 
