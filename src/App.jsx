@@ -7,6 +7,7 @@ import UserCard from "./components/ui/UserCard";
 import ErrorCard from "./components/ui/ErrorCard";
 import { getUser, getRepos, getRepoLanguages } from "./api/githubAPI";
 import BarChart from "./components/D3/BarChart";
+import DonutChart from "./components/D3/Donut";
 
 function App() {
   const [error, setError] = useState(null);
@@ -141,9 +142,9 @@ function App() {
         {error ? (
           <ErrorCard error={error} />
         ) : userData ? (
-          <BarChart data={userChart} />
+          <DonutChart data={dummyChart} />
         ) : (
-          <BarChart data={dummyChart} />
+          <DonutChart data={dummyChart} />
         )}{" "}
       </div>
     </div>
