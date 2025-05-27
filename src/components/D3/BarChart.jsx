@@ -1,12 +1,7 @@
-// src/components/D3/BarChart.jsx
 import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 
 const BarChart = ({ data }) => {
-  if (!Array.isArray(data)) {
-    console.error("Expected array for BarChart data, got:", data);
-    return null;
-  }
   const ref = useRef();
 
   useEffect(() => {
@@ -64,7 +59,14 @@ const BarChart = ({ data }) => {
       .style("font-size", "12px");
   }, [data]);
 
-  return <svg ref={ref} className="h-auto w-full"></svg>;
+  return (
+    <div className="flex flex-col items-center">
+      <h2 className="mb-2 text-lg font-semibold text-neutral-800 dark:text-white">
+        Language Usage (Top 10 Repos)
+      </h2>
+      <svg ref={ref} className="h-auto w-full" />
+    </div>
+  );
 };
 
 export default BarChart;

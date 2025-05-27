@@ -142,10 +142,10 @@ function App() {
         {error ? (
           <ErrorCard error={error} />
         ) : userData ? (
-          <DonutChart data={dummyChart} />
+          <DonutChart data={userChart} />
         ) : (
           <DonutChart data={dummyChart} />
-        )}{" "}
+        )}
       </div>
     </div>
   );

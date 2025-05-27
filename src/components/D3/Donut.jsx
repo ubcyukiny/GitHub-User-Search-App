@@ -5,6 +5,10 @@ const DonutChart = ({ data }) => {
   const ref = useRef();
 
   useEffect(() => {
+    console.log("DonutChart received new data:", data);
+
+    if (!Array.isArray(data) || data.length === 0) return;
+
     const svg = d3.select(ref.current);
     svg.selectAll("*").remove();
 
@@ -18,53 +22,62 @@ const DonutChart = ({ data }) => {
     svg
       .attr("width", width)
       .attr("height", height)
+      .attr("viewBox", `0 0 ${width} ${height}`)
+
       .attr("preserveAspectRatio", "xMidYMid meet");
 
+    // Append <g> and center it
     const g = svg
       .append("g")
       .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
-    // Create dummy data
-    const data = { a: 9, b: 20, c: 30, d: 8, e: 12 };
+    // Create the pie layout from array data
+    const pie = d3.pie().value((d) => d.bytes);
+    const data_ready = pie(data);
 
-    // set the color scale
     const color = d3
       .scaleOrdinal()
-      .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56"]);
-
-    // Compute the position of each group on the pie:
-    const pie = d3.pie().value((d) => d[1]);
-
-    const data_ready = pie(Object.entries(data));
-
+      .domain(data.map((d) => d.language))
+      .range(d3.schemeSet2);
     // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
 
     g.selectAll("path")
       .data(data_ready)
       .join("path")
       .attr("d", d3.arc().innerRadius(100).outerRadius(radius))
-      .attr("fill", (d) => color(d.data[0]))
+      .attr("fill", (d) => color(d.data.language))
       .attr("stroke", "black")
       .style("stroke-width", "2px")
       .style("opacity", 0.7);
-    // svg
-    //   .selectAll("whatever")
-    //   .data(data_ready)
-    //   .join("path")
-    //   .attr(
-    //     "d",
-    //     d3
-    //       .arc()
-    //       .innerRadius(100) // This is the size of the donut hole
-    //       .outerRadius(radius),
-    //   )
-    //   .attr("fill", (d) => color(d.data[0]))
-    //   .attr("stroke", "black")
-    //   .style("stroke-width", "2px")
-    //   .style("opacity", 0.7);
+
+    // Add labels
+    g.selectAll("text.label")
+      .data(data_ready)
+      .join("text")
+      .attr("class", "label")
+      .text((d) => d.data.language)
+      .attr("transform", (d) => {
+        const [x, y] = d3
+          .arc()
+          .innerRadius(radius * 0.7)
+          .outerRadius(radius * 0.7)
+          .centroid(d);
+        return `translate(${x}, ${y})`;
+      })
+      .attr("text-anchor", "middle")
+      .attr("alignment-baseline", "middle")
+      .style("font-size", "10px")
+      .style("fill", "#fff");
   }, [data]);
 
-  return <svg ref={ref} className="h-auto w-full"></svg>;
+  return (
+    <div className="flex flex-col items-center">
+      <h2 className="mb-2 text-lg font-semibold text-neutral-800 dark:text-white">
+        Language Usage (Top 10 Repos)
+      </h2>
+      <svg ref={ref} className="h-auto w-full" />
+    </div>
+  );
 };
 
 export default DonutChart;
