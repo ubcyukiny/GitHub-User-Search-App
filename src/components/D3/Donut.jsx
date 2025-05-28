@@ -44,30 +44,37 @@ const DonutChart = ({ data }) => {
     g.selectAll("path")
       .data(data_ready)
       .join("path")
-      .attr("d", d3.arc().innerRadius(100).outerRadius(radius))
       .attr("fill", (d) => color(d.data.language))
-      .attr("stroke", "black")
-      .style("stroke-width", "2px")
-      .style("opacity", 0.7);
+      .style("opacity", 0.7)
+      .transition()
+      .duration(900)
+      .attrTween("d", function (d) {
+        const i = d3.interpolate({ startAngle: 0, endAngle: 0 }, d);
+        const arc = d3.arc().innerRadius(100).outerRadius(radius);
+        return function (t) {
+          return arc(i(t));
+        };
+      });
+
+    const arcLabel = d3
+      .arc()
+      .innerRadius(radius * 1.15)
+      .outerRadius(radius * 1.15);
 
     // Add labels
     g.selectAll("text.label")
-      .data(data_ready)
+      .data(data_ready.filter((d) => d.endAngle - d.startAngle > 0.2))
       .join("text")
       .attr("class", "label")
       .text((d) => d.data.language)
       .attr("transform", (d) => {
-        const [x, y] = d3
-          .arc()
-          .innerRadius(radius * 0.7)
-          .outerRadius(radius * 0.7)
-          .centroid(d);
+        const [x, y] = arcLabel.centroid(d);
         return `translate(${x}, ${y})`;
       })
       .attr("text-anchor", "middle")
       .attr("alignment-baseline", "middle")
       .style("font-size", "10px")
-      .style("fill", "#fff");
+      .style("fill", "#000");
   }, [data]);
 
   return (

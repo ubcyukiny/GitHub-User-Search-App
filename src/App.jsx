@@ -25,11 +25,11 @@ function App() {
     return "light";
   };
 
-  const handleSearch = async () => {
-    if (!username) return;
-
+  const handleSearch = async (input) => {
+    if (!input) return;
+    console.log("input received: ", input);
     try {
-      const res = await getUser(username);
+      const res = await getUser(input);
       setUserData(res.data);
       setError(false);
     } catch (err) {
@@ -38,7 +38,7 @@ function App() {
     }
     let topRepos;
     try {
-      const repoRes = await getRepos(username);
+      const repoRes = await getRepos(input);
       console.log("userRepos: ", repoRes);
       topRepos = repoRes.data.slice(0, 10);
       console.log(topRepos);
