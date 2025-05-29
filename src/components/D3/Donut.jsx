@@ -3,86 +3,112 @@ import { useEffect, useRef } from "react";
 
 const DonutChart = ({ data }) => {
   const ref = useRef();
+  const width = 300;
+  const height = 300;
+  const margin = 20;
+  const radius = Math.min(width, height) / 2 - margin;
+  const tooltipOffsetX = 360;
+  const tooltipOffsetY = 10;
+  const sortedData = Array.isArray(data)
+    ? [...data].sort((a, b) => b.bytes - a.bytes)
+    : [];
 
   useEffect(() => {
-    console.log("DonutChart received new data:", data);
-
     if (!Array.isArray(data) || data.length === 0) return;
-
     const svg = d3.select(ref.current);
     svg.selectAll("*").remove();
-
-    const width = 300;
-    const height = 300;
-    const margin = 20;
-    // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
-
-    const radius = Math.min(width, height) / 2 - margin;
+    console.log("sortedData:", sortedData);
 
     svg
       .attr("width", width)
       .attr("height", height)
       .attr("viewBox", `0 0 ${width} ${height}`)
-
       .attr("preserveAspectRatio", "xMidYMid meet");
 
-    // Append <g> and center it
     const g = svg
       .append("g")
       .attr("transform", `translate(${width / 2}, ${height / 2})`);
 
     // Create the pie layout from array data
     const pie = d3.pie().value((d) => d.bytes);
-    const data_ready = pie(data);
+    const arc = d3.arc().innerRadius(100).outerRadius(radius);
+    const pieData = pie(sortedData);
 
     const color = d3
       .scaleOrdinal()
-      .domain(data.map((d) => d.language))
+      .domain(sortedData.map((d) => d.language))
       .range(d3.schemeSet2);
-    // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
 
     g.selectAll("path")
-      .data(data_ready)
-      .join("path")
+      .data(pieData)
+      .enter()
+      .append("path")
       .attr("fill", (d) => color(d.data.language))
       .style("opacity", 0.7)
+      .each(function (d) {
+        this._current = { startAngle: 0, endAngle: 0 };
+      })
+      .on("mouseover", function (event, d) {
+        d3.select(this).style("opacity", 1);
+
+        const [x, y] = d3.pointer(event, ref.current);
+        d3.select("#tooltip")
+          .style("left", `${x + tooltipOffsetX}px`)
+          .style("top", `${y + tooltipOffsetY}px`)
+          .style("opacity", 1)
+          .style("display", "block")
+          .html(`${d.data.language}: ${d.data.bytes} bytes`);
+      })
+      .on("mousemove", function (event) {
+        const [x, y] = d3.pointer(event, ref.current);
+        d3.select("#tooltip")
+          .style("left", `${x + tooltipOffsetX}px`)
+          .style("top", `${y + tooltipOffsetY}px`);
+      })
+      .on("mouseout", function () {
+        d3.select(this).style("opacity", 0.7);
+        d3.select("#tooltip").style("opacity", 0).style("display", "none");
+      })
       .transition()
       .duration(900)
       .attrTween("d", function (d) {
-        const i = d3.interpolate({ startAngle: 0, endAngle: 0 }, d);
-        const arc = d3.arc().innerRadius(100).outerRadius(radius);
-        return function (t) {
-          return arc(i(t));
-        };
+        const i = d3.interpolate(this._current, d);
+        this._current = i(1);
+        return (t) => arc(i(t));
       });
-
-    const arcLabel = d3
-      .arc()
-      .innerRadius(radius * 1.15)
-      .outerRadius(radius * 1.15);
-
-    // Add labels
-    g.selectAll("text.label")
-      .data(data_ready.filter((d) => d.endAngle - d.startAngle > 0.2))
-      .join("text")
-      .attr("class", "label")
-      .text((d) => d.data.language)
-      .attr("transform", (d) => {
-        const [x, y] = arcLabel.centroid(d);
-        return `translate(${x}, ${y})`;
-      })
-      .attr("text-anchor", "middle")
-      .attr("alignment-baseline", "middle")
-      .style("font-size", "10px")
-      .style("fill", "#000");
   }, [data]);
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="relative flex flex-col items-center">
       <h2 className="mb-2 text-lg font-semibold text-neutral-800 dark:text-white">
-        Language Usage (Top 10 Repos)
+        Language Usage (Recent 10 Repos)
       </h2>
-      <svg ref={ref} className="h-auto w-full" />
+      <svg ref={ref} className="h-auto w-full max-w-96" />
+      <div className="mt-4 flex flex-wrap justify-center gap-4">
+        {sortedData.map((d) => (
+          <div key={d.language} className="flex items-center gap-2 text-sm">
+            <div
+              className="h-3 w-3 rounded-full"
+              style={{
+                opacity: 0.7,
+                backgroundColor:
+                  d3.schemeSet2[
+                    sortedData.findIndex((l) => l.language === d.language) %
+                      d3.schemeSet2.length
+                  ],
+              }}
+            />
+            <span className="text-neutral-700 dark:text-neutral-200">
+              {d.language}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div
+        id="tooltip"
+        className="pointer-events-none absolute z-50 rounded bg-white p-2 text-xs shadow transition-opacity duration-200"
+        style={{ opacity: 0 }}
+      ></div>
     </div>
   );
 };
