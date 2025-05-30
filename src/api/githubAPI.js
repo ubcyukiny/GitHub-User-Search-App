@@ -27,3 +27,44 @@ export const getRepoLanguages = async (username, repoName) => {
     },
   });
 };
+
+export const buildForceGraphData = async (username) => {
+  const { data: repos } = await getRepos(username);
+
+  const nodes = [];
+  const links = [];
+  const langSet = new Set();
+
+  const topRepos = repos.filter((r) => !r.fork).slice(0, 10);
+
+  for (const repo of topRepos) {
+    const repoId = `repo:${repo.name}`;
+    nodes.push({
+      id: repoId,
+      type: "repo",
+      name: repo.name,
+      url: repo.html_url,
+    });
+
+    const { data: langObj } = await getRepoLanguages(username, repo.name);
+
+    for (const lang in langObj) {
+      const langId = `lang:${lang}`;
+      if (!langSet.has(lang)) {
+        nodes.push({
+          id: langId,
+          type: "lang",
+          name: lang,
+        });
+        langSet.add(lang);
+      }
+
+      links.push({
+        source: repoId,
+        target: langId,
+      });
+    }
+  }
+  console.log("nodes, links: ", { nodes, links });
+  return { nodes, links };
+};
