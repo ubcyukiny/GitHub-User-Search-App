@@ -29,13 +29,17 @@ export const getRepoLanguages = async (username, repoName) => {
 };
 
 export const buildForceGraphData = async (username) => {
-  const { data: repos } = await getRepos(username);
+  console.log("building force graph with: ", username);
+  const response = await getRepos(username);
+  console.log("response from force graph : ", response);
+
+  const repos = response?.data ?? [];
 
   const nodes = [];
   const links = [];
   const langSet = new Set();
 
-  const topRepos = repos.filter((r) => !r.fork).slice(0, 10);
+  const topRepos = repos.filter((r) => !r.fork).slice(0, 20);
 
   for (const repo of topRepos) {
     const repoId = `repo:${repo.name}`;

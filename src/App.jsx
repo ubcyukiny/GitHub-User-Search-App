@@ -47,7 +47,8 @@ function App() {
     let topRepos;
     try {
       const repoRes = await getRepos(input);
-      topRepos = repoRes.data.slice(0, 10);
+      topRepos = repoRes.data.slice(0, 20);
+      console.log("top 20 repos: ", topRepos);
     } catch (err) {
       console.error("Repo fetch failed:", err);
     }
@@ -75,7 +76,7 @@ function App() {
 
     setUserChart(chartData);
 
-    buildForceGraphData(username)
+    buildForceGraphData(input)
       .then((data) => setForceGraphData(data))
       .catch((err) => console.error("Graph data error:", err));
   };

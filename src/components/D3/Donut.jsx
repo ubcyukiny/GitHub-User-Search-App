@@ -81,7 +81,7 @@ const DonutChart = ({ data }) => {
   return (
     <div className="relative flex flex-col items-center">
       <h2 className="mb-2 text-lg font-semibold text-neutral-800 dark:text-white">
-        Language Usage (Recent 10 Repos)
+        Language Usage (Recent 20 Repos)
       </h2>
       <svg ref={ref} className="h-auto w-full max-w-96" />
       <div className="mt-4 flex flex-wrap justify-center gap-4">
