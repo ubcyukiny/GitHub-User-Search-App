@@ -12,6 +12,12 @@ function SearchBar({ onSearch, username, setUsername, error }) {
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              setUsername(inputValue);
+              onSearch(inputValue);
+            }
+          }}
           className="textPreset3Mobile sm:textPreset3 w-full bg-transparent text-neutral-500 placeholder-neutral-500 opacity-70 outline-none dark:text-neutral-50 dark:placeholder-neutral-50"
           maxLength={39}
           placeholder="Search GitHub username..."

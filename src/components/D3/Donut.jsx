@@ -50,14 +50,16 @@ const DonutChart = ({ data }) => {
       })
       .on("mouseover", function (event, d) {
         d3.select(this).style("opacity", 1);
-
+        console.log(d.data);
+        const total = d3.sum(data, (d) => d.bytes);
+        const percent = ((d.data.bytes / total) * 100).toFixed(1);
         const [x, y] = d3.pointer(event, ref.current);
         d3.select("#tooltip")
           .style("left", `${x + tooltipOffsetX}px`)
           .style("top", `${y + tooltipOffsetY}px`)
           .style("opacity", 1)
           .style("display", "block")
-          .html(`${d.data.language}: ${d.data.bytes} bytes`);
+          .html(`${d.data.language}: ${percent}%`);
       })
       .on("mousemove", function (event) {
         const [x, y] = d3.pointer(event, ref.current);

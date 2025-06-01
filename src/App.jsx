@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import "./App.css";
 import Logo from "./components/ui/Logo";
 import ThemeToggle from "./components/ui/ThemeToggle";
@@ -13,6 +13,7 @@ import {
 } from "./api/githubAPI";
 import DonutChart from "./components/D3/Donut";
 import ForceGraph from "./components/D3/ForceGraph";
+import { dummyChart, dummyGraph, dummyUser } from "./data/dummyData";
 
 function App() {
   const [error, setError] = useState(null);
@@ -59,95 +60,32 @@ function App() {
       try {
         const res = await getRepoLanguages(repo.owner.login, repo.name);
         const langs = res.data;
-
         for (const [lang, bytes] of Object.entries(langs)) {
           languageTotals[lang] = (languageTotals[lang] || 0) + bytes;
         }
       } catch (err) {
         console.error(`Error fetching languages for ${repo.name}`, err);
       }
+
+      const chartData = Object.entries(languageTotals).map(
+        ([language, bytes]) => ({
+          language,
+          bytes,
+        }),
+      );
+
+      setUserChart(chartData);
+
+      buildForceGraphData(input)
+        .then((data) => setForceGraphData(data))
+        .catch((err) => console.error("Graph data error:", err));
     }
-    const chartData = Object.entries(languageTotals).map(
-      ([language, bytes]) => ({
-        language,
-        bytes,
-      }),
-    );
-
-    setUserChart(chartData);
-
-    buildForceGraphData(input)
-      .then((data) => setForceGraphData(data))
-      .catch((err) => console.error("Graph data error:", err));
   };
 
   useEffect(() => {
     const resolvedTheme = theme === "system" ? getPreferredTheme() : theme;
     document.documentElement.classList.toggle("dark", resolvedTheme === "dark");
   }, [theme]);
-
-  const dummyUser = {
-    name: "The Octocat",
-    login: "octocat",
-    created_at: "2011-01-25T00:00:00Z",
-    avatar_url: "/assets/icon-user.png",
-    bio: "This profile has no bio",
-    public_repos: 8,
-    followers: 3938,
-    following: 9,
-    blog: "https://github.blog",
-    location: "San Francisco",
-    twitter_username: null,
-    company: "github",
-  };
-
-  const dummyChart = [
-    {
-      language: "CSS",
-      bytes: 15909,
-    },
-    {
-      language: "HTML",
-      bytes: 6611,
-    },
-    {
-      language: "JavaScript",
-      bytes: 105412,
-    },
-    {
-      language: "Prolog",
-      bytes: 4905,
-    },
-    {
-      language: "PHP",
-      bytes: 32075,
-    },
-    {
-      language: "Python",
-      bytes: 2966,
-    },
-  ];
-
-  const dummyGraph = {
-    nodes: [
-      { id: "repo:weather-app", type: "repo", name: "weather-app", url: "#" },
-      { id: "repo:todo-list", type: "repo", name: "todo-list", url: "#" },
-      { id: "repo:portfolio", type: "repo", name: "portfolio", url: "#" },
-      { id: "lang:JavaScript", type: "lang", name: "JavaScript" },
-      { id: "lang:HTML", type: "lang", name: "HTML" },
-      { id: "lang:CSS", type: "lang", name: "CSS" },
-      { id: "lang:React", type: "lang", name: "React" },
-    ],
-    links: [
-      { source: "repo:weather-app", target: "lang:JavaScript" },
-      { source: "repo:weather-app", target: "lang:HTML" },
-      { source: "repo:weather-app", target: "lang:CSS" },
-      { source: "repo:todo-list", target: "lang:JavaScript" },
-      { source: "repo:todo-list", target: "lang:React" },
-      { source: "repo:portfolio", target: "lang:React" },
-      { source: "repo:portfolio", target: "lang:CSS" },
-    ],
-  };
 
   return (
     <div className="flex w-full max-w-7xl bg-neutral-100 px-4 py-8 md:gap-2.5 md:px-8 md:py-10 lg:gap-2.5 lg:px-[180px] lg:py-[130px] xl:mx-auto xl:px-36 dark:bg-neutral-900">
