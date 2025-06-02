@@ -1,7 +1,7 @@
 import { SearchIcon } from "../icons";
 import { useState } from "react";
 
-function SearchBar({ onSearch, username, setUsername, error }) {
+function SearchBar({ onSearch, setUsername, error }) {
   const [inputValue, setInputValue] = useState("");
 
   return (
@@ -14,7 +14,6 @@ function SearchBar({ onSearch, username, setUsername, error }) {
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              setUsername(inputValue);
               onSearch(inputValue);
             }
           }}
@@ -30,7 +29,6 @@ function SearchBar({ onSearch, username, setUsername, error }) {
       )}
       <button
         onClick={(e) => {
-          setUsername(inputValue);
           onSearch(inputValue);
         }}
         className="textPreset5 rounded-[10px] bg-blue-500 px-5 py-3 text-white select-none hover:cursor-pointer hover:bg-blue-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"

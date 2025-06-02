@@ -5,15 +5,16 @@ import ThemeToggle from "./components/ui/ThemeToggle";
 import SearchBar from "./components/ui/SearchBar";
 import UserCard from "./components/ui/UserCard";
 import ErrorCard from "./components/ui/ErrorCard";
+import SkeletonUserCard from "./components/ui/SkeletonUserCard";
+import DonutChart from "./components/D3/Donut";
+import ForceGraph from "./components/D3/ForceGraph";
+import { dummyChart, dummyGraph, dummyUser } from "./data/dummyData";
 import {
   getUser,
   getRepos,
   getRepoLanguages,
   buildForceGraphData,
 } from "./api/githubAPI";
-import DonutChart from "./components/D3/Donut";
-import ForceGraph from "./components/D3/ForceGraph";
-import { dummyChart, dummyGraph, dummyUser } from "./data/dummyData";
 
 function App() {
   const [error, setError] = useState(null);
@@ -55,7 +56,7 @@ function App() {
     }
 
     const languageTotals = {};
-
+    let chartData = {};
     for (const repo of topRepos) {
       try {
         const res = await getRepoLanguages(repo.owner.login, repo.name);
@@ -67,19 +68,15 @@ function App() {
         console.error(`Error fetching languages for ${repo.name}`, err);
       }
 
-      const chartData = Object.entries(languageTotals).map(
-        ([language, bytes]) => ({
-          language,
-          bytes,
-        }),
-      );
-
-      setUserChart(chartData);
-
-      buildForceGraphData(input)
-        .then((data) => setForceGraphData(data))
-        .catch((err) => console.error("Graph data error:", err));
+      chartData = Object.entries(languageTotals).map(([language, bytes]) => ({
+        language,
+        bytes,
+      }));
     }
+    setUserChart(chartData);
+    buildForceGraphData(input)
+      .then((data) => setForceGraphData(data))
+      .catch((err) => console.error("Graph data error:", err));
   };
 
   useEffect(() => {
@@ -94,12 +91,8 @@ function App() {
           <Logo />
           <ThemeToggle theme={theme} setTheme={setTheme} />
         </div>
-        <SearchBar
-          username={username}
-          setUsername={setUsername}
-          onSearch={handleSearch}
-          error={error}
-        />
+        <SearchBar onSearch={handleSearch} error={error} />
+        <SkeletonUserCard />
         {error ? (
           <ErrorCard error={error} />
         ) : userData ? (
