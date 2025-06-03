@@ -1,0 +1,32 @@
+function TopRepos({ repos }) {
+  return (
+    <div className="flex flex-col gap-4">
+      <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">
+        Top Starred Repos
+      </h2>
+      {repos.map((repo) => (
+        <div
+          key={repo.id}
+          className="rounded-xl bg-white p-4 shadow-md dark:bg-neutral-800"
+        >
+          <a
+            href={repo.html_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-blue-500 hover:underline"
+          >
+            {repo.name}
+          </a>
+          <p className="mt-1 line-clamp-2 text-sm text-neutral-500">
+            {repo.description || "No description provided."}
+          </p>
+          <div className="mt-2 text-xs text-neutral-400">
+            ⭐ {repo.stargazers_count} · {repo.language}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default TopRepos;

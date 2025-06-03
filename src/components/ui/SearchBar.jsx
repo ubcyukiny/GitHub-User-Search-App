@@ -1,7 +1,7 @@
 import { SearchIcon } from "../icons";
 import { useState } from "react";
 
-function SearchBar({ onSearch, setUsername, error }) {
+function SearchBar({ onSearch, error }) {
   const [inputValue, setInputValue] = useState("");
 
   return (

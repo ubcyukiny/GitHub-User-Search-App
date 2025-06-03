@@ -60,3 +60,30 @@ export const dummyGraph = {
     { source: "repo:portfolio", target: "lang:CSS" },
   ],
 };
+
+export const dummyTopRepos = [
+  {
+    id: 1,
+    name: "portfolio-website",
+    description: "My personal portfolio built with React and Tailwind.",
+    html_url: "https://github.com/example/portfolio-website",
+    stargazers_count: 42,
+    language: "JavaScript",
+  },
+  {
+    id: 2,
+    name: "github-visualizer",
+    description: "An app that visualizes GitHub data using D3.js.",
+    html_url: "https://github.com/example/github-visualizer",
+    stargazers_count: 76,
+    language: "TypeScript",
+  },
+  {
+    id: 3,
+    name: "bmi-meal-planner",
+    description: "Track BMI and generate meal plans using OpenAI API.",
+    html_url: "https://github.com/example/bmi-meal-planner",
+    stargazers_count: 23,
+    language: "Python",
+  },
+];

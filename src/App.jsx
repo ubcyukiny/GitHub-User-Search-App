@@ -5,10 +5,17 @@ import ThemeToggle from "./components/ui/ThemeToggle";
 import SearchBar from "./components/ui/SearchBar";
 import UserCard from "./components/ui/UserCard";
 import ErrorCard from "./components/ui/ErrorCard";
-import SkeletonUserCard from "./components/ui/SkeletonUserCard";
+import SkeletonUserCard from "./components/ui/skeletons/SkeletonUserCard";
+import TopRepos from "./components/ui/TopRepos";
+import SkeletonRepoCard from "./components/ui/skeletons/SkeletonRepoCard";
 import DonutChart from "./components/D3/Donut";
 import ForceGraph from "./components/D3/ForceGraph";
-import { dummyChart, dummyGraph, dummyUser } from "./data/dummyData";
+import {
+  dummyChart,
+  dummyGraph,
+  dummyUser,
+  dummyTopRepos,
+} from "./data/dummyData";
 import {
   getUser,
   getRepos,
@@ -17,15 +24,16 @@ import {
 } from "./api/githubAPI";
 
 function App() {
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [theme, setTheme] = useState("system");
-  const [username, setUsername] = useState("");
   const [userData, setUserData] = useState(null);
   const [userChart, setUserChart] = useState(null);
   const [forceGraphData, setForceGraphData] = useState({
     nodes: [],
     links: [],
   });
+  const [featuredRepos, setFeaturedRepos] = useState([]);
 
   const getPreferredTheme = () => {
     if (typeof window !== "undefined" && window.matchMedia) {
@@ -38,6 +46,7 @@ function App() {
 
   const handleSearch = async (input) => {
     if (!input) return;
+    setLoading(true);
     try {
       const res = await getUser(input);
       setUserData(res.data);
@@ -51,8 +60,15 @@ function App() {
       const repoRes = await getRepos(input);
       topRepos = repoRes.data.slice(0, 20);
       console.log("top 20 repos: ", topRepos);
+      const featuredRepos = repoRes.data
+        .filter((repo) => !repo.fork)
+        .sort((a, b) => b.stargazers_count - a.stargazers_count)
+        .slice(0, 3);
+      console.log("most starred repos: top 3", featuredRepos);
+      setFeaturedRepos(featuredRepos);
     } catch (err) {
       console.error("Repo fetch failed:", err);
+      setFeaturedRepos([]);
     }
 
     const languageTotals = {};
@@ -77,6 +93,8 @@ function App() {
     buildForceGraphData(input)
       .then((data) => setForceGraphData(data))
       .catch((err) => console.error("Graph data error:", err));
+
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -92,10 +110,17 @@ function App() {
           <ThemeToggle theme={theme} setTheme={setTheme} />
         </div>
         <SearchBar onSearch={handleSearch} error={error} />
-        <SkeletonUserCard />
-        {error ? (
-          <ErrorCard error={error} />
-        ) : userData ? (
+        {loading && <SkeletonRepoCard />}
+        {!loading && featuredRepos && (
+          <TopRepos
+            repos={featuredRepos?.length > 0 ? featuredRepos : dummyTopRepos}
+          />
+        )}
+        {loading && <SkeletonUserCard />}
+
+        {!loading && error && <ErrorCard error={error} />}
+
+        {!loading && userData && (
           <div className="flex flex-col gap-8">
             <UserCard userData={userData} />
             <DonutChart data={userChart} />
@@ -104,7 +129,8 @@ function App() {
               links={forceGraphData.links}
             />
           </div>
-        ) : (
+        )}
+        {!loading && !userData && !error && (
           <div className="flex flex-col gap-8">
             <UserCard userData={dummyUser} />
             <DonutChart data={dummyChart} />
