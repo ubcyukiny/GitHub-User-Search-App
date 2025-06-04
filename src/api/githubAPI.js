@@ -72,3 +72,10 @@ export const buildForceGraphData = async (username) => {
   console.log("nodes, links: ", { nodes, links });
   return { nodes, links };
 };
+
+export const getUserEvents = async (username) => {
+  return await octokit.request("GET /users/{username}/repos", {
+    username,
+    per_page: 100,
+  });
+};

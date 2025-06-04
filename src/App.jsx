@@ -8,6 +8,7 @@ import ErrorCard from "./components/ui/ErrorCard";
 import SkeletonUserCard from "./components/ui/skeletons/SkeletonUserCard";
 import TopRepos from "./components/ui/TopRepos";
 import SkeletonRepoCard from "./components/ui/skeletons/SkeletonRepoCard";
+import ActivityHeatmap from "./components/D3/ActivityHeatmap";
 import DonutChart from "./components/D3/Donut";
 import ForceGraph from "./components/D3/ForceGraph";
 import {
@@ -15,6 +16,7 @@ import {
   dummyGraph,
   dummyUser,
   dummyTopRepos,
+  dummyEvents,
 } from "./data/dummyData";
 import {
   getUser,
@@ -110,6 +112,8 @@ function App() {
           <ThemeToggle theme={theme} setTheme={setTheme} />
         </div>
         <SearchBar onSearch={handleSearch} error={error} />
+        <ActivityHeatmap events={dummyEvents} />
+
         {loading && <SkeletonRepoCard />}
         {!loading && featuredRepos && (
           <TopRepos
