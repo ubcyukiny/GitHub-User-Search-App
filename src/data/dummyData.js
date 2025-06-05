@@ -89,54 +89,14 @@ export const dummyTopRepos = [
 ];
 
 export const dummyEvents = [
-  {
-    type: "PushEvent",
-    repo: { name: "user/repo-1" },
-    created_at: "2024-06-01T12:00:00Z",
-  },
-  {
-    type: "IssuesEvent",
-    repo: { name: "user/repo-2" },
-    created_at: "2024-06-02T08:45:00Z",
-  },
-  {
-    type: "PullRequestEvent",
-    repo: { name: "user/repo-3" },
-    created_at: "2024-06-03T15:20:00Z",
-  },
-  {
-    type: "PushEvent",
-    repo: { name: "user/repo-1" },
-    created_at: "2024-06-03T18:30:00Z",
-  },
-  {
-    type: "WatchEvent",
-    repo: { name: "user/repo-4" },
-    created_at: "2024-06-04T11:00:00Z",
-  },
-  {
-    type: "PushEvent",
-    repo: { name: "user/repo-1" },
-    created_at: "2024-06-05T17:10:00Z",
-  },
-  {
-    type: "ForkEvent",
-    repo: { name: "user/repo-2" },
-    created_at: "2024-06-06T19:00:00Z",
-  },
-  {
-    type: "PushEvent",
-    repo: { name: "user/repo-1" },
-    created_at: "2024-06-07T10:15:00Z",
-  },
-  {
-    type: "PullRequestEvent",
-    repo: { name: "user/repo-3" },
-    created_at: "2024-06-07T13:45:00Z",
-  },
-  {
-    type: "PushEvent",
-    repo: { name: "user/repo-1" },
-    created_at: "2024-06-08T14:00:00Z",
-  },
+  { type: "PushEvent", created_at: "2024-06-01T12:00:00Z" },
+  { type: "IssuesEvent", created_at: "2024-06-02T08:45:00Z" },
+  { type: "PullRequestEvent", created_at: "2024-06-03T15:20:00Z" },
+  { type: "PushEvent", created_at: "2024-06-03T18:30:00Z" },
+  { type: "WatchEvent", created_at: "2024-06-04T11:00:00Z" },
+  { type: "PushEvent", created_at: "2024-06-05T17:10:00Z" },
+  { type: "ForkEvent", created_at: "2024-06-06T19:00:00Z" },
+  { type: "PushEvent", created_at: "2024-06-07T10:15:00Z" },
+  { type: "PullRequestEvent", created_at: "2024-06-07T13:45:00Z" },
+  { type: "PushEvent", created_at: "2024-06-08T14:00:00Z" },
 ];
