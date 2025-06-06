@@ -74,7 +74,7 @@ export const buildForceGraphData = async (username) => {
 };
 
 export const getUserEvents = async (username) => {
-  return await octokit.request("GET /users/{username}/repos", {
+  return await octokit.request("GET /users/{username}/events/public", {
     username,
     per_page: 100,
   });

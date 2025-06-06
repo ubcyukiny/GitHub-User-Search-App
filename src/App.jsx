@@ -7,8 +7,8 @@ import UserCard from "./components/ui/UserCard";
 import ErrorCard from "./components/ui/ErrorCard";
 import SkeletonUserCard from "./components/ui/skeletons/SkeletonUserCard";
 import TopRepos from "./components/ui/TopRepos";
+import ThreeMonthHeatmap from "./components/D3/ThreeMonthHeatmap";
 import SkeletonRepoCard from "./components/ui/skeletons/SkeletonRepoCard";
-import ActivityHeatmap from "./components/D3/ActivityHeatmap";
 import DonutChart from "./components/D3/Donut";
 import ForceGraph from "./components/D3/ForceGraph";
 import {
@@ -23,6 +23,7 @@ import {
   getRepos,
   getRepoLanguages,
   buildForceGraphData,
+  getUserEvents,
 } from "./api/githubAPI";
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
     links: [],
   });
   const [featuredRepos, setFeaturedRepos] = useState([]);
+  const [events, setEvents] = useState([]);
 
   const getPreferredTheme = () => {
     if (typeof window !== "undefined" && window.matchMedia) {
@@ -96,6 +98,16 @@ function App() {
       .then((data) => setForceGraphData(data))
       .catch((err) => console.error("Graph data error:", err));
 
+    getUserEvents(input)
+      .then((data) => {
+        console.log("events: ", data.data);
+        setEvents(data.data);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch events:", err);
+        setEvents([]);
+      });
+
     setLoading(false);
   };
 
@@ -112,8 +124,12 @@ function App() {
           <ThemeToggle theme={theme} setTheme={setTheme} />
         </div>
         <SearchBar onSearch={handleSearch} error={error} />
-        <ActivityHeatmap events={dummyEvents} />
 
+        {!loading && events && (
+          <ThreeMonthHeatmap
+            events={events?.length > 0 ? events : dummyEvents}
+          />
+        )}
         {loading && <SkeletonRepoCard />}
         {!loading && featuredRepos && (
           <TopRepos
