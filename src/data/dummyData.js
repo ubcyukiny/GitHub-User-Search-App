@@ -100,3 +100,52 @@ export const dummyEvents = [
   { created_at: "2025-06-03T13:45:00Z" },
   { created_at: "2025-06-04T14:00:00Z" },
 ];
+
+export const dummyPinned = [
+  {
+    name: "github-visualizer",
+    description:
+      "A dynamic GitHub profile analyzer built with React and D3.js.",
+    url: "https://github.com/ubcyukiny/github-visualizer",
+    stargazerCount: 42,
+    forkCount: 12,
+    primaryLanguage: {
+      name: "JavaScript",
+      color: "#f1e05a",
+    },
+  },
+  {
+    name: "spotify-viz",
+    description: "Visualize your Spotify listening habits using D3 charts.",
+    url: "https://github.com/ubcyukiny/spotify-viz",
+    stargazerCount: 17,
+    forkCount: 5,
+    primaryLanguage: {
+      name: "TypeScript",
+      color: "#3178c6",
+    },
+  },
+  {
+    name: "bmi-meal-planner",
+    description: "Track BMI and generate AI meal plans based on goals.",
+    url: "https://github.com/ubcyukiny/bmi-meal-planner",
+    stargazerCount: 9,
+    forkCount: 2,
+    primaryLanguage: {
+      name: "React",
+      color: "#61dafb",
+    },
+  },
+  {
+    name: "blog-preview-card",
+    description:
+      "Frontend Mentor challenge using Tailwind CSS and semantic HTML.",
+    url: "https://github.com/ubcyukiny/blog-preview-card",
+    stargazerCount: 4,
+    forkCount: 1,
+    primaryLanguage: {
+      name: "HTML",
+      color: "#e34c26",
+    },
+  },
+];

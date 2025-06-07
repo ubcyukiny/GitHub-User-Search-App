@@ -1,4 +1,5 @@
 import { Octokit } from "@octokit/core";
+import { graphql } from "@octokit/graphql";
 
 const octokit = new Octokit({ auth: import.meta.env.VITE_GITHUB_TOKEN });
 
@@ -78,4 +79,35 @@ export const getUserEvents = async (username) => {
     username,
     per_page: 100,
   });
+};
+
+const PINNED_REPOS_QUERY = `query($username: String!) {
+  user(login: $username) {
+    pinnedItems(first: 6, types: REPOSITORY) {
+      nodes {
+        ... on Repository {
+          name
+          description
+          url
+          stargazerCount
+          forkCount
+          primaryLanguage {
+            name
+            color
+          }
+        }
+      }
+    }
+  }
+}`;
+
+const graphqlWithAuth = graphql.defaults({
+  headers: {
+    authorization: `token ${import.meta.env.VITE_GITHUB_TOKEN}`,
+  },
+});
+
+export const getPinnedRepos = async (username) => {
+  const res = await graphqlWithAuth(PINNED_REPOS_QUERY, { username });
+  return res.user.pinnedItems.nodes;
 };

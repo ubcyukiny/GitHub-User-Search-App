@@ -11,12 +11,14 @@ import ThreeMonthHeatmap from "./components/D3/ThreeMonthHeatmap";
 import SkeletonRepoCard from "./components/ui/skeletons/SkeletonRepoCard";
 import DonutChart from "./components/D3/Donut";
 import ForceGraph from "./components/D3/ForceGraph";
+import PinnedRepos from "./components/ui/PinnedRepos";
 import {
   dummyChart,
   dummyGraph,
   dummyUser,
   dummyTopRepos,
   dummyEvents,
+  dummyPinned,
 } from "./data/dummyData";
 import {
   getUser,
@@ -24,6 +26,7 @@ import {
   getRepoLanguages,
   buildForceGraphData,
   getUserEvents,
+  getPinnedRepos,
 } from "./api/githubAPI";
 
 function App() {
@@ -38,6 +41,7 @@ function App() {
   });
   const [featuredRepos, setFeaturedRepos] = useState([]);
   const [events, setEvents] = useState([]);
+  const [pinned, setPinned] = useState([]);
 
   const getPreferredTheme = () => {
     if (typeof window !== "undefined" && window.matchMedia) {
@@ -108,6 +112,11 @@ function App() {
         setEvents([]);
       });
 
+    // change later
+    getPinnedRepos(input)
+      .then((data) => setPinned(data))
+      .catch(console.error);
+
     setLoading(false);
   };
 
@@ -124,7 +133,9 @@ function App() {
           <ThemeToggle theme={theme} setTheme={setTheme} />
         </div>
         <SearchBar onSearch={handleSearch} error={error} />
-
+        {!loading && pinned && (
+          <PinnedRepos repos={pinned?.length > 0 ? pinned : dummyPinned} />
+        )}
         {!loading && events && (
           <ThreeMonthHeatmap
             events={events?.length > 0 ? events : dummyEvents}
