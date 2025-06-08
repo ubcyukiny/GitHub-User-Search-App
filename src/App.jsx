@@ -12,6 +12,8 @@ import SkeletonRepoCard from "./components/ui/skeletons/SkeletonRepoCard";
 import DonutChart from "./components/D3/Donut";
 import ForceGraph from "./components/D3/ForceGraph";
 import PinnedRepos from "./components/ui/PinnedRepos";
+import ShareButtonWithModal from "./components/ui/ShareButtonWithModal";
+
 import {
   dummyChart,
   dummyGraph,
@@ -28,6 +30,7 @@ import {
   getUserEvents,
   getPinnedRepos,
 } from "./api/githubAPI";
+import { Routes, Route, useParams, useNavigate } from "react-router-dom";
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -42,6 +45,8 @@ function App() {
   const [featuredRepos, setFeaturedRepos] = useState([]);
   const [events, setEvents] = useState([]);
   const [pinned, setPinned] = useState([]);
+  const { username } = useParams();
+  const navigate = useNavigate();
 
   const getPreferredTheme = () => {
     if (typeof window !== "undefined" && window.matchMedia) {
@@ -50,6 +55,11 @@ function App() {
         : "light";
     }
     return "light";
+  };
+
+  const handleRouteSearch = (input) => {
+    if (!input || input === username) return;
+    navigate(`/${input}`);
   };
 
   const handleSearch = async (input) => {
@@ -112,7 +122,6 @@ function App() {
         setEvents([]);
       });
 
-    // change later
     getPinnedRepos(input)
       .then((data) => setPinned(data))
       .catch(console.error);
@@ -125,14 +134,20 @@ function App() {
     document.documentElement.classList.toggle("dark", resolvedTheme === "dark");
   }, [theme]);
 
-  return (
+  useEffect(() => {
+    if (username) {
+      handleSearch(username);
+    }
+  }, [username]);
+
+  const content = (
     <div className="flex w-full max-w-7xl bg-neutral-100 px-4 py-8 md:gap-2.5 md:px-8 md:py-10 lg:gap-2.5 lg:px-[180px] lg:py-[130px] xl:mx-auto xl:px-36 dark:bg-neutral-900">
       <div className="flex w-full flex-col gap-8">
         <div className="flex flex-row items-center justify-between">
           <Logo />
           <ThemeToggle theme={theme} setTheme={setTheme} />
         </div>
-        <SearchBar onSearch={handleSearch} error={error} />
+        <SearchBar onSearch={handleRouteSearch} error={error} />
         {!loading && pinned && (
           <PinnedRepos repos={pinned?.length > 0 ? pinned : dummyPinned} />
         )}
@@ -168,8 +183,16 @@ function App() {
             <ForceGraph nodes={dummyGraph.nodes} links={dummyGraph.links} />
           </div>
         )}
+        <ShareButtonWithModal />
       </div>
     </div>
+  );
+
+  return (
+    <Routes>
+      <Route path="/" element={content} />
+      <Route path="/:username" element={content} />
+    </Routes>
   );
 }
 
