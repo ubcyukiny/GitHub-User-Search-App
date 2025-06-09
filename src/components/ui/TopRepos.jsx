@@ -1,3 +1,5 @@
+import { getLanguageColor } from "../../utils/colorUtils";
+
 function TopRepos({ repos }) {
   return (
     <div className="flex flex-col gap-4">
@@ -17,11 +19,20 @@ function TopRepos({ repos }) {
           >
             {repo.name}
           </a>
-          <p className="mt-1 line-clamp-2 text-sm text-neutral-500">
+          <p className="mt-1 line-clamp-2 text-sm text-neutral-500 dark:text-neutral-400">
             {repo.description || "No description provided."}
           </p>
-          <div className="mt-2 text-xs text-neutral-400">
-            ⭐ {repo.stargazers_count} · {repo.language}
+          <div className="mt-2 flex gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+            <span>⭐ {repo.stargazers_count}</span>
+            {repo.language && (
+              <div className="flex items-center gap-1">
+                <span
+                  className="h-3 w-3 rounded-full"
+                  style={{ backgroundColor: getLanguageColor(repo.language) }}
+                />
+                <span>{repo.language}</span>
+              </div>
+            )}
           </div>
         </div>
       ))}

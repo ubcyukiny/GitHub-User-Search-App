@@ -5,7 +5,7 @@ export default function AppRouter() {
   return (
     <Routes>
       <Route path="/" element={<App />} />
-      <Route path="/:username" element={<App />} />
+      <Route path="/:username/*" element={<App />} />
     </Routes>
   );
 }

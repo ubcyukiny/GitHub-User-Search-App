@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 import { useEffect, useRef } from "react";
+import { getLanguageColor } from "../../utils/colorUtils";
 
 const DonutChart = ({ data }) => {
   const ref = useRef();
@@ -34,16 +35,16 @@ const DonutChart = ({ data }) => {
     const arc = d3.arc().innerRadius(100).outerRadius(radius);
     const pieData = pie(sortedData);
 
-    const color = d3
-      .scaleOrdinal()
-      .domain(sortedData.map((d) => d.language))
-      .range(d3.schemeSet2);
+    // const color = d3
+    //   .scaleOrdinal()
+    //   .domain(sortedData.map((d) => d.language))
+    //   .range(d3.schemeSet2);
 
     g.selectAll("path")
       .data(pieData)
       .enter()
       .append("path")
-      .attr("fill", (d) => color(d.data.language))
+      .attr("fill", (d) => getLanguageColor(d.data.language))
       .style("opacity", 0.7)
       .each(function (d) {
         this._current = { startAngle: 0, endAngle: 0 };
@@ -93,11 +94,7 @@ const DonutChart = ({ data }) => {
               className="h-3 w-3 rounded-full"
               style={{
                 opacity: 0.7,
-                backgroundColor:
-                  d3.schemeSet2[
-                    sortedData.findIndex((l) => l.language === d.language) %
-                      d3.schemeSet2.length
-                  ],
+                backgroundColor: getLanguageColor(d.language),
               }}
             />
             <span className="text-neutral-700 dark:text-neutral-200">

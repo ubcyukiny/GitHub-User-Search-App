@@ -1,3 +1,5 @@
+import { getLanguageColor } from "../../utils/colorUtils";
+
 function PinnedRepos({ repos }) {
   if (!repos || repos.length === 0) return null;
 
@@ -21,19 +23,22 @@ function PinnedRepos({ repos }) {
             {repo.name}
           </a>
 
-          <p className="mt-1 line-clamp-2 text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="mt-1 line-clamp-2 text-sm text-neutral-500 dark:text-neutral-400">
             {repo.description || "No description provided."}
           </p>
 
-          <div className="mt-2 flex flex-wrap gap-4 text-sm text-neutral-400">
-            <div>
-              ⭐ {repo.stargazerCount} · 🍴 {repo.forkCount}
-            </div>
+          <div className="mt-2 flex gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+            <span>⭐ {repo.stargazerCount}</span>
+
             {repo.primaryLanguage && (
               <div className="flex items-center gap-1">
                 <span
                   className="h-3 w-3 rounded-full"
-                  style={{ backgroundColor: repo.primaryLanguage.color }}
+                  style={{
+                    backgroundColor: getLanguageColor(
+                      repo.primaryLanguage.name,
+                    ),
+                  }}
                 />
                 <span>{repo.primaryLanguage.name}</span>
               </div>

@@ -1,8 +1,11 @@
-// Copyright 2021-2024 Observable, Inc.
-// Released under the ISC license.
-// https://observablehq.com/@d3/force-directed-graph
+/**
+ * Adapted from Mike Bostock's ForceGraph example
+ * https://observablehq.com/@d3/force-directed-graph
+ * © 2021 Observable, Inc. Licensed under MIT license
+ */
 
 import { useEffect, useRef } from "react";
+import { getLanguageColor } from "../../utils/colorUtils";
 import * as d3 from "d3";
 
 function ForceGraph({ nodes, links, width = 800, height = 600 }) {
@@ -57,7 +60,9 @@ function ForceGraph({ nodes, links, width = 800, height = 600 }) {
       .data(nodes)
       .join("circle")
       .attr("r", effectiveRadius)
-      .attr("fill", (d) => (d.type === "repo" ? "#60abff" : langColor(d.name)))
+      .attr("fill", (d) =>
+        d.type === "repo" ? "#60abff" : getLanguageColor(d.name),
+      )
       .call(
         d3
           .drag()
