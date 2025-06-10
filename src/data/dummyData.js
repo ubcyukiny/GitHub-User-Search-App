@@ -149,3 +149,36 @@ export const dummyPinned = [
     },
   },
 ];
+
+export const dummyFollowers = [
+  {
+    login: "octocat",
+    avatar_url: "https://avatars.githubusercontent.com/u/583231?v=4",
+    html_url: "https://github.com/octocat",
+  },
+  {
+    login: "torvalds",
+    avatar_url: "https://avatars.githubusercontent.com/u/1024025?v=4",
+    html_url: "https://github.com/torvalds",
+  },
+  {
+    login: "gaearon",
+    avatar_url: "https://avatars.githubusercontent.com/u/810438?v=4",
+    html_url: "https://github.com/gaearon",
+  },
+  {
+    login: "yyx990803",
+    avatar_url: "https://avatars.githubusercontent.com/u/499550?v=4",
+    html_url: "https://github.com/yyx990803",
+  },
+  {
+    login: "sindresorhus",
+    avatar_url: "https://avatars.githubusercontent.com/u/170270?v=4",
+    html_url: "https://github.com/sindresorhus",
+  },
+  {
+    login: "ubcyukiny",
+    avatar_url: "https://avatars.githubusercontent.com/u/77815690?v=4",
+    html_url: "https://github.com/ubcyukiny",
+  },
+];

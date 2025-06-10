@@ -19,6 +19,13 @@ export const getRepos = async (username) => {
   });
 };
 
+export const getFollowers = async (username) => {
+  return await octokit.request("GET /users/{username}/followers", {
+    username,
+    per_page: 10,
+  });
+};
+
 export const getRepoLanguages = async (username, repoName) => {
   return await octokit.request("GET /repos/{owner}/{repo}/languages", {
     owner: username,

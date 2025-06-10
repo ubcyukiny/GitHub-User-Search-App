@@ -13,7 +13,7 @@ import DonutChart from "./components/D3/Donut";
 import ForceGraph from "./components/D3/ForceGraph";
 import PinnedRepos from "./components/ui/PinnedRepos";
 import ShareButtonWithModal from "./components/ui/ShareButtonWithModal";
-
+import Followers from "./components/ui/Follwers";
 import {
   dummyChart,
   dummyGraph,
@@ -21,6 +21,7 @@ import {
   dummyTopRepos,
   dummyEvents,
   dummyPinned,
+  dummyFollowers,
 } from "./data/dummyData";
 import {
   getUser,
@@ -29,6 +30,7 @@ import {
   buildForceGraphData,
   getUserEvents,
   getPinnedRepos,
+  getFollowers,
 } from "./api/githubAPI";
 import { Routes, Route, useParams, useNavigate } from "react-router-dom";
 
@@ -45,6 +47,7 @@ function App() {
   const [featuredRepos, setFeaturedRepos] = useState([]);
   const [events, setEvents] = useState([]);
   const [pinned, setPinned] = useState([]);
+  const [followers, setFollowers] = useState([]);
   const { username } = useParams();
   const navigate = useNavigate();
 
@@ -125,7 +128,12 @@ function App() {
     getPinnedRepos(input)
       .then((data) => setPinned(data))
       .catch(console.error);
-
+    getFollowers(input)
+      .then((res) => setFollowers(res.data.slice(0, 6)))
+      .catch((err) => {
+        console.error("Followers fetch failed:", err);
+        setFollowers([]);
+      });
     setLoading(false);
   };
 
@@ -151,6 +159,9 @@ function App() {
         {!loading && pinned && (
           <PinnedRepos repos={pinned?.length > 0 ? pinned : dummyPinned} />
         )}
+
+        <Followers followers={followers} />
+
         {!loading && events && (
           <ThreeMonthHeatmap
             events={events?.length > 0 ? events : dummyEvents}
