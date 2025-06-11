@@ -128,12 +128,26 @@ function App() {
     getPinnedRepos(input)
       .then((data) => setPinned(data))
       .catch(console.error);
-    getFollowers(input)
-      .then((res) => setFollowers(res.data.slice(0, 6)))
-      .catch((err) => {
-        console.error("Followers fetch failed:", err);
-        setFollowers([]);
-      });
+    let baseFollowers = [];
+    try {
+      const res = await getFollowers(input);
+      baseFollowers = res.data.slice(0, 6);
+    } catch (err) {
+      console.error("Followers fetch failed:", err);
+      setFollowers([]);
+      return;
+    }
+
+    try {
+      const enriched = await Promise.all(
+        baseFollowers.map((f) => getUser(f.login).then((res) => res.data)),
+      );
+      setFollowers(enriched);
+    } catch (err) {
+      console.error("Enriching follower details failed", err);
+      setFollowers([]);
+    }
+
     setLoading(false);
   };
 
