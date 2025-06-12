@@ -14,6 +14,8 @@ import ForceGraph from "./components/D3/ForceGraph";
 import PinnedRepos from "./components/ui/PinnedRepos";
 import ShareButtonWithModal from "./components/ui/ShareButtonWithModal";
 import Followers from "./components/ui/Follwers";
+import Header from "./components/ui/Header";
+
 import {
   dummyChart,
   dummyGraph,
@@ -163,52 +165,75 @@ function App() {
   }, [username]);
 
   const content = (
-    <div className="flex w-full max-w-7xl bg-neutral-100 px-4 py-8 md:gap-2.5 md:px-8 md:py-10 lg:gap-2.5 lg:px-[180px] lg:py-[130px] xl:mx-auto xl:px-36 dark:bg-neutral-900">
-      <div className="flex w-full flex-col gap-8">
-        <div className="flex flex-row items-center justify-between">
-          <Logo />
-          <ThemeToggle theme={theme} setTheme={setTheme} />
+    // <div className="flex w-full max-w-7xl bg-neutral-100 px-4 py-8 md:gap-2.5 md:px-8 md:py-10 lg:gap-2.5 lg:px-[180px] lg:py-[130px] xl:mx-auto xl:px-36 dark:bg-neutral-900">
+    //   <div className="flex w-full flex-col gap-8">
+    //     <Header />
+    //     <div className="flex flex-row items-center justify-between">
+    //       <Logo />
+    //       <ThemeToggle theme={theme} setTheme={setTheme} />
+    //     </div>
+    //     <SearchBar onSearch={handleRouteSearch} error={error} />
+    //     {!loading && pinned && (
+    //       <PinnedRepos repos={pinned?.length > 0 ? pinned : dummyPinned} />
+    //     )}
+
+    //     <Followers followers={followers} />
+
+    //     {!loading && events && (
+    //       <ThreeMonthHeatmap
+    //         events={events?.length > 0 ? events : dummyEvents}
+    //       />
+    //     )}
+    //     {loading && <SkeletonRepoCard />}
+    //     {!loading && featuredRepos && (
+    //       <TopRepos
+    //         repos={featuredRepos?.length > 0 ? featuredRepos : dummyTopRepos}
+    //       />
+    //     )}
+    //     {loading && <SkeletonUserCard />}
+
+    //     {!loading && error && <ErrorCard error={error} />}
+
+    //     {!loading && userData && (
+    //       <div className="flex flex-col gap-8">
+    //         <UserCard userData={userData} />
+    //         <DonutChart data={userChart} />
+    //         <ForceGraph
+    //           nodes={forceGraphData.nodes}
+    //           links={forceGraphData.links}
+    //         />
+    //       </div>
+    //     )}
+    //     {!loading && !userData && !error && (
+    //       <div className="flex flex-col gap-8">
+    //         <UserCard userData={dummyUser} />
+    //         <DonutChart data={dummyChart} />
+    //         <ForceGraph nodes={dummyGraph.nodes} links={dummyGraph.links} />
+    //       </div>
+    //     )}
+    //     <ShareButtonWithModal />
+    //   </div>
+    // </div>
+    <div className="flex flex-col gap-6 px-4 py-6 sm:px-6 lg:px-12 xl:px-24">
+      <Header />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* Left */}
+        <div className="flex flex-col gap-6">
+          <UserCard userData={dummyUser} />
+          <ThreeMonthHeatmap events={dummyEvents} />
         </div>
-        <SearchBar onSearch={handleRouteSearch} error={error} />
-        {!loading && pinned && (
-          <PinnedRepos repos={pinned?.length > 0 ? pinned : dummyPinned} />
-        )}
 
-        <Followers followers={followers} />
+        {/* Middle */}
+        <div className="flex flex-col gap-6">
+          <PinnedRepos repos={dummyPinned} />
+          <Followers followers={followers} />
+        </div>
 
-        {!loading && events && (
-          <ThreeMonthHeatmap
-            events={events?.length > 0 ? events : dummyEvents}
-          />
-        )}
-        {loading && <SkeletonRepoCard />}
-        {!loading && featuredRepos && (
-          <TopRepos
-            repos={featuredRepos?.length > 0 ? featuredRepos : dummyTopRepos}
-          />
-        )}
-        {loading && <SkeletonUserCard />}
-
-        {!loading && error && <ErrorCard error={error} />}
-
-        {!loading && userData && (
-          <div className="flex flex-col gap-8">
-            <UserCard userData={userData} />
-            <DonutChart data={userChart} />
-            <ForceGraph
-              nodes={forceGraphData.nodes}
-              links={forceGraphData.links}
-            />
-          </div>
-        )}
-        {!loading && !userData && !error && (
-          <div className="flex flex-col gap-8">
-            <UserCard userData={dummyUser} />
-            <DonutChart data={dummyChart} />
-            <ForceGraph nodes={dummyGraph.nodes} links={dummyGraph.links} />
-          </div>
-        )}
-        <ShareButtonWithModal />
+        {/* Right */}
+        <div className="flex flex-col gap-6">
+          <DonutChart data={dummyChart} />
+          <ForceGraph nodes={dummyGraph.nodes} links={dummyGraph.links} />
+        </div>
       </div>
     </div>
   );
