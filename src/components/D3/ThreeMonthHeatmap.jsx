@@ -28,6 +28,7 @@ function ThreeMonthHeatmap({ events }) {
       .append("svg")
       .attr("width", width)
       .attr("height", height);
+    console.log("Appended SVG:", svg.node());
 
     const g = svg
       .append("g")
@@ -44,8 +45,8 @@ function ThreeMonthHeatmap({ events }) {
 
     const colorScale = d3
       .scaleThreshold()
-      .domain([1, 2, 4, 6])
-      .range(["#ebedf0", "#c6e48b", "#7bc96f", "#239a3b", "#196127"]);
+      .domain([1, 2, 3, 4])
+      .range(["#3a3a3a", "#3f6846", "#4caf50", "#43d17a", "#a1f4c4"]);
 
     // Y-labels
     const yLabels = ["", "Mon", "", "Wed", "", "Fri", ""];
@@ -90,8 +91,8 @@ function ThreeMonthHeatmap({ events }) {
       .selectAll("rect")
       .data(([, days]) => days)
       .join("rect")
-      .attr("width", cellSize - 2)
-      .attr("height", cellSize - 2)
+      .attr("width", cellSize - 2.5)
+      .attr("height", cellSize - 2.5)
       .attr("y", (d) => d.getDay() * cellSize)
       .attr("rx", 2)
       .attr("ry", 2)
@@ -146,7 +147,17 @@ function ThreeMonthHeatmap({ events }) {
       .text("More");
   }, [events]);
 
-  return <div ref={ref} />;
+  return (
+    <div className="flex flex-col gap-4">
+      <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">
+        GitHub Contribution Activity
+      </h2>
+      <div
+        ref={ref}
+        className="flex w-full justify-center overflow-x-auto rounded-2xl bg-neutral-50 px-4 py-6 shadow-xl md:px-6 md:py-6 dark:bg-neutral-800"
+      />
+    </div>
+  );
 }
 
 export default ThreeMonthHeatmap;

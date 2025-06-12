@@ -225,8 +225,8 @@ function App() {
 
         {/* Middle */}
         <div className="flex flex-col gap-6">
-          <PinnedRepos repos={dummyPinned} />
           <Followers followers={followers} />
+          <PinnedRepos repos={dummyPinned} />
         </div>
 
         {/* Right */}
