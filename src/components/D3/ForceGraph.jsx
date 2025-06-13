@@ -11,7 +11,7 @@ import * as d3 from "d3";
 function ForceGraph({ nodes, links, width = 800, height = 600 }) {
   const ref = useRef();
   const screenWidth = window.innerWidth;
-  const effectiveRadius = screenWidth < 500 ? 12 : 7;
+  const effectiveRadius = screenWidth < 500 ? 12 : 13;
   const tooltipOffsetX = 140;
   const tooltipOffsetY = 450;
   const updateTooltipPosition = (event) => {
@@ -25,11 +25,6 @@ function ForceGraph({ nodes, links, width = 800, height = 600 }) {
 
     const svg = d3.select(ref.current);
     svg.selectAll("*").remove();
-    svg.style("background-color", "#1f2937");
-    const langColor = d3
-      .scaleOrdinal()
-      .domain(nodes.filter((d) => d.type === "lang").map((d) => d.name))
-      .range(d3.schemeSet2);
 
     const simulation = d3
       .forceSimulation(nodes)
@@ -42,6 +37,7 @@ function ForceGraph({ nodes, links, width = 800, height = 600 }) {
       )
       .force("charge", d3.forceManyBody().strength(-100))
       .force("center", d3.forceCenter(width / 2, height / 2))
+      .force("collide", d3.forceCollide(effectiveRadius + 2))
       .on("tick", ticked);
 
     const link = svg
@@ -54,14 +50,12 @@ function ForceGraph({ nodes, links, width = 800, height = 600 }) {
 
     const node = svg
       .append("g")
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 1.5)
       .selectAll("circle")
       .data(nodes)
       .join("circle")
       .attr("r", effectiveRadius)
       .attr("fill", (d) =>
-        d.type === "repo" ? "#60abff" : getLanguageColor(d.name),
+        d.type === "repo" ? "#ffffff" : getLanguageColor(d.name),
       )
       .call(
         d3
@@ -108,21 +102,41 @@ function ForceGraph({ nodes, links, width = 800, height = 600 }) {
         .attr("y2", (d) => d.target.y);
 
       node
-        .attr("cx", (d) => (d.x = Math.max(10, Math.min(width - 10, d.x))))
-        .attr("cy", (d) => (d.y = Math.max(10, Math.min(height - 10, d.y))));
+        .attr(
+          "cx",
+          (d) =>
+            (d.x = Math.max(
+              effectiveRadius,
+              Math.min(width - effectiveRadius, d.x),
+            )),
+        )
+        .attr(
+          "cy",
+          (d) =>
+            (d.y = Math.max(
+              effectiveRadius,
+              Math.min(height - effectiveRadius, d.y),
+            )),
+        );
     }
 
     return () => simulation.stop();
   }, [nodes, links, width, height]);
 
   return (
-    <div>
+    <div className="flex flex-col gap-4">
+      <h2 className="mb-2 text-lg font-semibold text-neutral-800 dark:text-white">
+        Language–Repo Force Graph
+      </h2>
       <svg
         ref={ref}
         viewBox={`0 0 ${width} ${height}`}
         preserveAspectRatio="xMidYMid meet"
         style={{ width: "100%", height: "auto" }}
       />
+      <p className="mb-4 text-sm text-neutral-500 dark:text-neutral-300">
+        Each repo links to its top language. Drag nodes to explore the graph.
+      </p>
       <div
         id="tooltip"
         className="pointer-events-none fixed z-50 rounded-md bg-white px-3 py-2 text-sm text-neutral-800 opacity-0 shadow-lg ring-1 ring-gray-200 transition-opacity duration-200 dark:bg-neutral-800 dark:text-white dark:ring-white/20"

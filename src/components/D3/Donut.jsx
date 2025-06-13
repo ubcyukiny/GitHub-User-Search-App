@@ -82,7 +82,7 @@ const DonutChart = ({ data }) => {
   }, [data]);
 
   return (
-    <div className="relative flex flex-col items-center">
+    <div className="relative flex flex-col">
       <h2 className="mb-2 text-lg font-semibold text-neutral-800 dark:text-white">
         Language Usage (Recent 20 Repos)
       </h2>
