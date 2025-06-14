@@ -36,8 +36,7 @@ npm run dev
 ```
 
 ## 🖼 Visuals
-
-![Full Page Screenshot](./screenshot.png)
+![screenshot](https://github.com/user-attachments/assets/471d4a34-d5d0-40e2-bf1b-b5e5588d3d7a)
 
 ## 🧾 Credits
 
