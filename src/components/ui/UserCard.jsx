@@ -1,6 +1,7 @@
 import { CompanyIcon, LocationIcon, TwitterIcon, WebsiteIcon } from "../icons";
 
 function UserCard({ userData }) {
+  console.log("userData fetched = ", userData);
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">

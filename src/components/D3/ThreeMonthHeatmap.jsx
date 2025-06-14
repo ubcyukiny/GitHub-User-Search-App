@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
+import { resolveTheme } from "../../utils/resolveTheme";
 import * as d3 from "d3";
 
-function ThreeMonthHeatmap({ events }) {
+function ThreeMonthHeatmap({ events, theme }) {
   const ref = useRef();
+  const actualTheme = resolveTheme(theme);
 
   useEffect(() => {
     console.log(
@@ -46,7 +48,11 @@ function ThreeMonthHeatmap({ events }) {
     const colorScale = d3
       .scaleThreshold()
       .domain([1, 2, 3, 4])
-      .range(["#3a3a3a", "#3f6846", "#4caf50", "#43d17a", "#a1f4c4"]);
+      .range(
+        actualTheme === "dark"
+          ? ["#3a3a3a", "#3f6846", "#4caf50", "#43d17a", "#a1f4c4"]
+          : ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"],
+      );
 
     // Y-labels
     const yLabels = ["", "Mon", "", "Wed", "", "Fri", ""];
@@ -145,7 +151,7 @@ function ThreeMonthHeatmap({ events }) {
       .attr("y", 10)
       .attr("class", "text-sm fill-[#6e7781]")
       .text("More");
-  }, [events]);
+  }, [events, theme]);
 
   return (
     <div className="flex flex-col gap-4">

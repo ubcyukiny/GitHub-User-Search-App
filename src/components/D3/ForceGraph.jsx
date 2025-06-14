@@ -6,10 +6,13 @@
 
 import { useEffect, useRef } from "react";
 import { getLanguageColor } from "../../utils/colorUtils";
+import { resolveTheme } from "../../utils/resolveTheme";
 import * as d3 from "d3";
 
-function ForceGraph({ nodes, links, width = 800, height = 600 }) {
+function ForceGraph({ nodes, links, width = 800, height = 600, theme }) {
   const ref = useRef();
+  const actualTheme = resolveTheme(theme);
+
   const screenWidth = window.innerWidth;
   const effectiveRadius = screenWidth < 500 ? 12 : 13;
   const tooltipOffsetX = 140;
@@ -55,7 +58,11 @@ function ForceGraph({ nodes, links, width = 800, height = 600 }) {
       .join("circle")
       .attr("r", effectiveRadius)
       .attr("fill", (d) =>
-        d.type === "repo" ? "#ffffff" : getLanguageColor(d.name),
+        d.type === "repo"
+          ? actualTheme === "dark"
+            ? "#ffffff"
+            : "#8b949e"
+          : getLanguageColor(d.name),
       )
       .call(
         d3
@@ -121,7 +128,7 @@ function ForceGraph({ nodes, links, width = 800, height = 600 }) {
     }
 
     return () => simulation.stop();
-  }, [nodes, links, width, height]);
+  }, [nodes, links, width, height, theme]);
 
   return (
     <div className="flex flex-col gap-4">

@@ -1,17 +1,57 @@
-# React + Vite
+# devfinder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern GitHub profile visualizer built with **React**, **Vite**, **Tailwind CSS**, and **D3.js**.  
+Search any GitHub user and explore their public profile, repositories, language usage, and network graph — all beautifully visualized.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🔍 Features
 
-## Expanding the ESLint configuration
+- 🎨 Responsive UI with light/dark/system theme toggle
+- 📈 Force-directed language–repo graph (D3.js)
+- 🧱 GitHub-style contribution heatmap (3-month range)
+- 📊 Language usage donut chart
+- 📌 Pinned repositories and follower preview cards
+- 🌐 Shareable permalink + modal
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
 
-## Credits
+## 🛠 Tech Stack
 
-Force-directed graph adapted from [Mike Bostock’s Observable notebook](https://observablehq.com/@d3/force-directed-graph).  
+- **React** + **Vite**
+- **Tailwind CSS**
+- **D3.js** for visualizations
+- **GitHub REST API** for user + repo data
+- Responsive layout via Tailwind’s utility-first system
+
+---
+
+## 🧪 Development
+
+This template uses Vite’s default setup with hot module reloading:
+
+```bash
+npm install
+npm run dev
+```
+
+## 🖼 Visuals
+
+![Full Page Screenshot](./screenshot.png)
+
+## 🧾 Credits
+
+Force-directed graph adapted from Mike Bostock’s Observable notebook.
 Original copyright © 2021 Observable, Inc. Licensed under the MIT License.
+
+Logo and favicon generated using LogoMakr.
+
+Logo: https://app.logomakr.com/2xB8x8
+
+Favicon: https://app.logomakr.com/7Yyekz
+
+## 📝 License
+
+This project’s source code is licensed under the [MIT License](https://opensource.org/licenses/MIT) — you are free to use or adapt it for learning or personal use.
+
+> ⚠️ Note: The logo and favicon were generated using [LogoMakr](https://logomakr.com) under their **free license**, which requires attribution and **does not allow commercial use** without a paid license.

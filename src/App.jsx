@@ -1,26 +1,21 @@
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
-import Logo from "./components/ui/Logo";
-import ThemeToggle from "./components/ui/ThemeToggle";
-import SearchBar from "./components/ui/SearchBar";
 import UserCard from "./components/ui/UserCard";
 import ErrorCard from "./components/ui/ErrorCard";
 import SkeletonUserCard from "./components/ui/skeletons/SkeletonUserCard";
-import TopRepos from "./components/ui/TopRepos";
 import ThreeMonthHeatmap from "./components/D3/ThreeMonthHeatmap";
 import SkeletonRepoCard from "./components/ui/skeletons/SkeletonRepoCard";
 import DonutChart from "./components/D3/Donut";
 import ForceGraph from "./components/D3/ForceGraph";
 import PinnedRepos from "./components/ui/PinnedRepos";
-import ShareButtonWithModal from "./components/ui/ShareButtonWithModal";
 import Followers from "./components/ui/Follwers";
 import Header from "./components/ui/Header";
+import Footer from "./components/ui/Footer";
 
 import {
   dummyChart,
   dummyGraph,
   dummyUser,
-  dummyTopRepos,
   dummyEvents,
   dummyPinned,
   dummyFollowers,
@@ -46,7 +41,6 @@ function App() {
     nodes: [],
     links: [],
   });
-  const [featuredRepos, setFeaturedRepos] = useState([]);
   const [events, setEvents] = useState([]);
   const [pinned, setPinned] = useState([]);
   const [followers, setFollowers] = useState([]);
@@ -83,15 +77,8 @@ function App() {
       const repoRes = await getRepos(input);
       topRepos = repoRes.data.slice(0, 20);
       console.log("top 20 repos: ", topRepos);
-      const featuredRepos = repoRes.data
-        .filter((repo) => !repo.fork)
-        .sort((a, b) => b.stargazers_count - a.stargazers_count)
-        .slice(0, 3);
-      console.log("most starred repos: top 3", featuredRepos);
-      setFeaturedRepos(featuredRepos);
     } catch (err) {
       console.error("Repo fetch failed:", err);
-      setFeaturedRepos([]);
     }
 
     const languageTotals = {};
@@ -130,10 +117,11 @@ function App() {
     getPinnedRepos(input)
       .then((data) => setPinned(data))
       .catch(console.error);
+
     let baseFollowers = [];
     try {
       const res = await getFollowers(input);
-      baseFollowers = res.data.slice(0, 6);
+      baseFollowers = res.data.slice(0, 4);
     } catch (err) {
       console.error("Followers fetch failed:", err);
       setFollowers([]);
@@ -165,76 +153,38 @@ function App() {
   }, [username]);
 
   const content = (
-    // <div className="flex w-full max-w-7xl bg-neutral-100 px-4 py-8 md:gap-2.5 md:px-8 md:py-10 lg:gap-2.5 lg:px-[180px] lg:py-[130px] xl:mx-auto xl:px-36 dark:bg-neutral-900">
-    //   <div className="flex w-full flex-col gap-8">
-    //     <Header />
-    //     <div className="flex flex-row items-center justify-between">
-    //       <Logo />
-    //       <ThemeToggle theme={theme} setTheme={setTheme} />
-    //     </div>
-    //     <SearchBar onSearch={handleRouteSearch} error={error} />
-    //     {!loading && pinned && (
-    //       <PinnedRepos repos={pinned?.length > 0 ? pinned : dummyPinned} />
-    //     )}
-
-    //     <Followers followers={followers} />
-
-    //     {!loading && events && (
-    //       <ThreeMonthHeatmap
-    //         events={events?.length > 0 ? events : dummyEvents}
-    //       />
-    //     )}
-    //     {loading && <SkeletonRepoCard />}
-    //     {!loading && featuredRepos && (
-    //       <TopRepos
-    //         repos={featuredRepos?.length > 0 ? featuredRepos : dummyTopRepos}
-    //       />
-    //     )}
-    //     {loading && <SkeletonUserCard />}
-
-    //     {!loading && error && <ErrorCard error={error} />}
-
-    //     {!loading && userData && (
-    //       <div className="flex flex-col gap-8">
-    //         <UserCard userData={userData} />
-    //         <DonutChart data={userChart} />
-    //         <ForceGraph
-    //           nodes={forceGraphData.nodes}
-    //           links={forceGraphData.links}
-    //         />
-    //       </div>
-    //     )}
-    //     {!loading && !userData && !error && (
-    //       <div className="flex flex-col gap-8">
-    //         <UserCard userData={dummyUser} />
-    //         <DonutChart data={dummyChart} />
-    //         <ForceGraph nodes={dummyGraph.nodes} links={dummyGraph.links} />
-    //       </div>
-    //     )}
-    //     <ShareButtonWithModal />
-    //   </div>
-    // </div>
     <div className="flex flex-col gap-6 px-4 py-6 sm:px-6 lg:px-12 xl:px-24">
-      <Header />
+      <Header onSearch={handleRouteSearch} />
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* Left */}
         <div className="flex flex-col gap-6">
-          <UserCard userData={dummyUser} />
-          <ThreeMonthHeatmap events={dummyEvents} />
+          <UserCard userData={userData ? userData : dummyUser} />
+          <ThreeMonthHeatmap
+            theme={theme}
+            events={events.length > 0 ? events : dummyEvents}
+          />
         </div>
-
-        {/* Middle */}
         <div className="flex flex-col gap-6">
-          <Followers followers={followers} />
-          <PinnedRepos repos={dummyPinned} />
+          <Followers followers={followers ? followers : dummyFollowers} />
+          <PinnedRepos repos={pinned.length > 0 ? pinned : dummyPinned} />
         </div>
-
-        {/* Right */}
         <div className="flex flex-col gap-6">
-          <DonutChart data={dummyChart} />
-          <ForceGraph nodes={dummyGraph.nodes} links={dummyGraph.links} />
+          <DonutChart data={userChart ? userChart : dummyChart} />
+          <ForceGraph
+            theme={theme}
+            nodes={
+              forceGraphData.nodes.length > 0
+                ? forceGraphData.nodes
+                : dummyGraph.nodes
+            }
+            links={
+              forceGraphData.links.length > 0
+                ? forceGraphData.links
+                : dummyGraph.links
+            }
+          />
         </div>
       </div>
+      <Footer theme={theme} setTheme={setTheme} />
     </div>
   );
 
