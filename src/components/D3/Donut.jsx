@@ -8,8 +8,6 @@ const DonutChart = ({ data }) => {
   const height = 300;
   const margin = 20;
   const radius = Math.min(width, height) / 2 - margin;
-  const tooltipOffsetX = 360;
-  const tooltipOffsetY = 10;
   const sortedData = Array.isArray(data)
     ? [...data].sort((a, b) => b.bytes - a.bytes)
     : [];
@@ -18,7 +16,6 @@ const DonutChart = ({ data }) => {
     if (!Array.isArray(data) || data.length === 0) return;
     const svg = d3.select(ref.current);
     svg.selectAll("*").remove();
-    console.log("sortedData:", sortedData);
 
     svg
       .attr("width", width)
@@ -35,11 +32,6 @@ const DonutChart = ({ data }) => {
     const arc = d3.arc().innerRadius(100).outerRadius(radius);
     const pieData = pie(sortedData);
 
-    // const color = d3
-    //   .scaleOrdinal()
-    //   .domain(sortedData.map((d) => d.language))
-    //   .range(d3.schemeSet2);
-
     g.selectAll("path")
       .data(pieData)
       .enter()
@@ -51,22 +43,19 @@ const DonutChart = ({ data }) => {
       })
       .on("mouseover", function (event, d) {
         d3.select(this).style("opacity", 1);
-        console.log(d.data);
         const total = d3.sum(data, (d) => d.bytes);
         const percent = ((d.data.bytes / total) * 100).toFixed(1);
         const [x, y] = d3.pointer(event, ref.current);
         d3.select("#tooltip")
-          .style("left", `${x + tooltipOffsetX}px`)
-          .style("top", `${y + tooltipOffsetY}px`)
+          .style("left", `${x}px`)
+          .style("top", `${y}px`)
           .style("opacity", 1)
           .style("display", "block")
           .html(`${d.data.language}: ${percent}%`);
       })
       .on("mousemove", function (event) {
         const [x, y] = d3.pointer(event, ref.current);
-        d3.select("#tooltip")
-          .style("left", `${x + tooltipOffsetX}px`)
-          .style("top", `${y + tooltipOffsetY}px`);
+        d3.select("#tooltip").style("left", `${x}px`).style("top", `${y}px`);
       })
       .on("mouseout", function () {
         d3.select(this).style("opacity", 0.7);
@@ -105,7 +94,7 @@ const DonutChart = ({ data }) => {
       </div>
       <div
         id="tooltip"
-        className="pointer-events-none absolute z-50 rounded bg-white p-2 text-xs shadow transition-opacity duration-200"
+        className="pointer-events-none absolute z-50 rounded border border-neutral-200 bg-white px-2 py-1 text-sm text-black shadow transition-opacity duration-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
         style={{ opacity: 0 }}
       ></div>
     </div>

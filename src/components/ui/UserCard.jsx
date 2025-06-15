@@ -1,7 +1,6 @@
 import { CompanyIcon, LocationIcon, TwitterIcon, WebsiteIcon } from "../icons";
 
 function UserCard({ userData }) {
-  console.log("userData fetched = ", userData);
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">
@@ -30,7 +29,7 @@ function UserCard({ userData }) {
               href={userData.html_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="textPreset4 text-blue-500 hover:underline"
+              className="textPreset4 cursor-pointer text-blue-500 hover:underline dark:text-blue-300"
             >
               @{userData.login}
             </a>

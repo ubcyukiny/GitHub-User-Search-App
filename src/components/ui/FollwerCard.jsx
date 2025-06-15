@@ -10,9 +10,14 @@ function FollowerCard({ follower }) {
         <p className="mt-3 text-base font-semibold text-neutral-800 dark:text-white">
           {follower.name || follower.login}
         </p>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">
+        <a
+          href={follower.html_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="cursor-pointer text-sm text-blue-500 hover:underline dark:text-blue-300"
+        >
           @{follower.login}
-        </p>
+        </a>
 
         {follower.bio && (
           <p className="mt-2 line-clamp-2 text-center text-sm text-neutral-600 dark:text-neutral-300">

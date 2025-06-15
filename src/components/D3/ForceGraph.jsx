@@ -4,30 +4,49 @@
  * © 2021 Observable, Inc. Licensed under MIT license
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getLanguageColor } from "../../utils/colorUtils";
 import { resolveTheme } from "../../utils/resolveTheme";
 import * as d3 from "d3";
 
-function ForceGraph({ nodes, links, width = 800, height = 600, theme }) {
+function ForceGraph({ nodes, links, theme }) {
+  const containerRef = useRef();
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
   const ref = useRef();
   const actualTheme = resolveTheme(theme);
+  const effectiveRadius = 6;
 
-  const screenWidth = window.innerWidth;
-  const effectiveRadius = screenWidth < 500 ? 12 : 13;
-  const tooltipOffsetX = 140;
-  const tooltipOffsetY = 450;
-  const updateTooltipPosition = (event) => {
-    const [x, y] = d3.pointer(event, ref.current);
-    d3.select("#tooltip")
-      .style("left", `${x + tooltipOffsetX}px`)
-      .style("top", `${y + tooltipOffsetY}px`);
-  };
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const observer = new ResizeObserver(([entry]) => {
+      const { width } = entry.contentRect;
+      setDimensions({ width, height: width });
+    });
+
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     if (!nodes.length || !links.length) return;
-
+    if (
+      !nodes.length ||
+      !links.length ||
+      dimensions.width === 0 ||
+      dimensions.height === 0
+    )
+      return;
     const svg = d3.select(ref.current);
     svg.selectAll("*").remove();
+
+    svg
+      .attr("width", dimensions.width)
+      .attr("height", dimensions.height)
+      .attr("viewBox", `0 0 ${dimensions.width} ${dimensions.height}`)
+      .attr("preserveAspectRatio", "xMidYMid meet");
 
     const simulation = d3
       .forceSimulation(nodes)
@@ -36,10 +55,13 @@ function ForceGraph({ nodes, links, width = 800, height = 600, theme }) {
         d3
           .forceLink(links)
           .id((d) => d.id)
-          .distance(80),
+          .distance(35),
       )
-      .force("charge", d3.forceManyBody().strength(-100))
-      .force("center", d3.forceCenter(width / 2, height / 2))
+      .force("charge", d3.forceManyBody().strength(-20))
+      .force(
+        "center",
+        d3.forceCenter(dimensions.width / 2, dimensions.height / 2),
+      )
       .force("collide", d3.forceCollide(effectiveRadius + 2))
       .on("tick", ticked);
 
@@ -81,26 +103,30 @@ function ForceGraph({ nodes, links, width = 800, height = 600, theme }) {
             d.fx = null;
             d.fy = null;
           }),
-      );
-
-    node.append("title").text((d) => d.name);
-
-    node
+      )
       .on("mouseover", (event, d) => {
-        updateTooltipPosition(event);
-
+        const [x, y] = d3.pointer(event, ref.current);
         d3.select("#tooltip")
+          .style("left", `${x + 25}px`)
+          .style("top", `${y + 505}px`)
           .style("opacity", 1)
+          .style("display", "block")
           .html(
             d.type === "repo"
-              ? `<strong>Repo:</strong> ${d.name}<br/><a href="${d.url}" target="_blank" class="text-blue-500 underline">Open ↗</a>`
+              ? `<strong>Repo:</strong> ${d.name}<br/>`
               : `<strong>Language:</strong> ${d.name}`,
           );
       })
-      .on("mousemove", updateTooltipPosition)
-      .on("mouseout", () => {
-        d3.select("#tooltip").style("opacity", 0);
+      .on("mousemove", function (event) {
+        const [x, y] = d3.pointer(event, ref.current);
+        d3.select("#tooltip")
+          .style("left", `${x + 25}px`)
+          .style("top", `${y + 505}px`);
+      })
+      .on("mouseout", function () {
+        d3.select("#tooltip").style("opacity", 0).style("display", "none");
       });
+
     function ticked() {
       link
         .attr("x1", (d) => d.source.x)
@@ -114,7 +140,7 @@ function ForceGraph({ nodes, links, width = 800, height = 600, theme }) {
           (d) =>
             (d.x = Math.max(
               effectiveRadius,
-              Math.min(width - effectiveRadius, d.x),
+              Math.min(dimensions.width - effectiveRadius, d.x),
             )),
         )
         .attr(
@@ -122,31 +148,27 @@ function ForceGraph({ nodes, links, width = 800, height = 600, theme }) {
           (d) =>
             (d.y = Math.max(
               effectiveRadius,
-              Math.min(height - effectiveRadius, d.y),
+              Math.min(dimensions.height - effectiveRadius, d.y),
             )),
         );
     }
 
     return () => simulation.stop();
-  }, [nodes, links, width, height, theme]);
+  }, [nodes, links, dimensions.width, dimensions.height, theme]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div ref={containerRef} className="relative flex flex-col gap-4">
       <h2 className="mb-2 text-lg font-semibold text-neutral-800 dark:text-white">
         Language–Repo Force Graph
       </h2>
-      <svg
-        ref={ref}
-        viewBox={`0 0 ${width} ${height}`}
-        preserveAspectRatio="xMidYMid meet"
-        style={{ width: "100%", height: "auto" }}
-      />
+      <svg ref={ref} className="h-auto w-full max-w-96" />
       <p className="mb-4 text-sm text-neutral-500 dark:text-neutral-300">
         Each repo links to its top language. Drag nodes to explore the graph.
       </p>
       <div
         id="tooltip"
-        className="pointer-events-none fixed z-50 rounded-md bg-white px-3 py-2 text-sm text-neutral-800 opacity-0 shadow-lg ring-1 ring-gray-200 transition-opacity duration-200 dark:bg-neutral-800 dark:text-white dark:ring-white/20"
+        className="pointer-events-none absolute z-50 rounded border border-neutral-200 bg-white px-2 py-1 text-sm text-black shadow transition-opacity duration-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+        style={{ opacity: 0 }}
       ></div>
     </div>
   );

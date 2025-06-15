@@ -76,7 +76,6 @@ function App() {
     try {
       const repoRes = await getRepos(input);
       topRepos = repoRes.data.slice(0, 20);
-      console.log("top 20 repos: ", topRepos);
     } catch (err) {
       console.error("Repo fetch failed:", err);
     }
@@ -106,7 +105,6 @@ function App() {
 
     getUserEvents(input)
       .then((data) => {
-        console.log("events: ", data.data);
         setEvents(data.data);
       })
       .catch((err) => {
@@ -152,39 +150,103 @@ function App() {
     }
   }, [username]);
 
+  function useMediaQuery(query) {
+    const [matches, setMatches] = useState(false);
+
+    useEffect(() => {
+      const media = window.matchMedia(query);
+      const listener = () => setMatches(media.matches);
+      setMatches(media.matches);
+      media.addEventListener("change", listener);
+      return () => media.removeEventListener("change", listener);
+    }, [query]);
+
+    return matches;
+  }
+
+  const isTabletView = useMediaQuery(
+    "(min-width: 640px) and (max-width: 1279px)",
+  );
+  const isDesktopView = useMediaQuery("(min-width: 1280px)");
+
   const content = (
-    <div className="flex flex-col gap-6 px-4 py-6 sm:px-6 lg:px-12 xl:px-24">
-      <Header onSearch={handleRouteSearch} />
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="flex flex-col gap-6">
-          <UserCard userData={userData ? userData : dummyUser} />
-          <ThreeMonthHeatmap
-            theme={theme}
-            events={events.length > 0 ? events : dummyEvents}
-          />
+    <div className="flex w-full justify-center">
+      <div className="flex max-w-screen-2xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-12 xl:px-24">
+        <Header onSearch={handleRouteSearch} />
+        <div className="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 sm:justify-items-stretch xl:grid-cols-3">
+          {/* Column 1 */}
+          <div className="flex w-full max-w-xl flex-col gap-6">
+            <UserCard userData={userData || dummyUser} />
+            <ThreeMonthHeatmap
+              theme={theme}
+              events={events.length > 0 ? events : dummyEvents}
+            />
+            {isTabletView && <DonutChart data={userChart || dummyChart} />}
+          </div>
+
+          {/* Column 2 */}
+          <div className="flex w-full max-w-xl flex-col gap-6">
+            <Followers followers={followers || dummyFollowers} />
+            <PinnedRepos repos={pinned.length > 0 ? pinned : dummyPinned} />
+            {!isTabletView && !isDesktopView && (
+              <DonutChart data={userChart || dummyChart} />
+            )}
+            {!isTabletView && !isDesktopView && (
+              <ForceGraph
+                theme={theme}
+                nodes={
+                  forceGraphData.nodes.length > 0
+                    ? forceGraphData.nodes
+                    : dummyGraph.nodes
+                }
+                links={
+                  forceGraphData.links.length > 0
+                    ? forceGraphData.links
+                    : dummyGraph.links
+                }
+              />
+            )}{" "}
+            {/* Mobile */}
+            {isTabletView && (
+              <ForceGraph
+                theme={theme}
+                nodes={
+                  forceGraphData.nodes.length > 0
+                    ? forceGraphData.nodes
+                    : dummyGraph.nodes
+                }
+                links={
+                  forceGraphData.links.length > 0
+                    ? forceGraphData.links
+                    : dummyGraph.links
+                }
+              />
+            )}
+          </div>
+
+          {/* Column 3 (desktop only) */}
+          {isDesktopView && (
+            <div className="flex w-full max-w-xl flex-col gap-6">
+              <DonutChart data={userChart || dummyChart} />
+              <ForceGraph
+                theme={theme}
+                nodes={
+                  forceGraphData.nodes.length > 0
+                    ? forceGraphData.nodes
+                    : dummyGraph.nodes
+                }
+                links={
+                  forceGraphData.links.length > 0
+                    ? forceGraphData.links
+                    : dummyGraph.links
+                }
+              />
+            </div>
+          )}
         </div>
-        <div className="flex flex-col gap-6">
-          <Followers followers={followers ? followers : dummyFollowers} />
-          <PinnedRepos repos={pinned.length > 0 ? pinned : dummyPinned} />
-        </div>
-        <div className="flex flex-col gap-6">
-          <DonutChart data={userChart ? userChart : dummyChart} />
-          <ForceGraph
-            theme={theme}
-            nodes={
-              forceGraphData.nodes.length > 0
-                ? forceGraphData.nodes
-                : dummyGraph.nodes
-            }
-            links={
-              forceGraphData.links.length > 0
-                ? forceGraphData.links
-                : dummyGraph.links
-            }
-          />
-        </div>
+
+        <Footer theme={theme} setTheme={setTheme} />
       </div>
-      <Footer theme={theme} setTheme={setTheme} />
     </div>
   );
 

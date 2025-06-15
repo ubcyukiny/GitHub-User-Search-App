@@ -40,14 +40,20 @@ npm run dev
 
 ## 🧾 Credits
 
-Force-directed graph adapted from Mike Bostock’s Observable notebook.
+Force-directed graph adapted from Mike Bostock’s Observable notebook.  
 Original copyright © 2021 Observable, Inc. Licensed under the MIT License.
 
-Logo and favicon generated using LogoMakr.
+Partially inspired by [Maeve Kane’s fork of the Quaker network graph](https://observablehq.com/@mkane2/force-directed-graph-with-tooltip), which added dynamic tooltips and aesthetic improvements.  
+Original data and graph concept from the [Programming Historian Python network lesson](https://programminghistorian.org/en/lessons/creating-network-diagrams-from-historical-sources).
 
-Logo: https://app.logomakr.com/2xB8x8
+Logo and favicon generated using LogoMakr (used under free license with credit).
 
-Favicon: https://app.logomakr.com/7Yyekz
+- Logo: https://app.logomakr.com/2xB8x8
+- Favicon: https://app.logomakr.com/7Yyekz
+
+Initial UI design inspiration from [Frontend Mentor](https://www.frontendmentor.io/challenges/github-user-search-app-Q09YOgaH6).
+
+🧠 Special thanks to AI tools (ChatGPT) for helping me debug D3 and polish UX.
 
 ## 📝 License
 

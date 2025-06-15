@@ -3,6 +3,7 @@ export const dummyUser = {
   login: "octocat",
   created_at: "2011-01-25T00:00:00Z",
   avatar_url: "/assets/icon-user.png",
+  html_url: "https://github.com/octocat",
   bio: "This profile has no bio",
   public_repos: 8,
   followers: 3938,
@@ -14,30 +15,16 @@ export const dummyUser = {
 };
 
 export const dummyChart = [
-  {
-    language: "CSS",
-    bytes: 15909,
-  },
-  {
-    language: "HTML",
-    bytes: 6611,
-  },
-  {
-    language: "JavaScript",
-    bytes: 105412,
-  },
-  {
-    language: "Prolog",
-    bytes: 4905,
-  },
-  {
-    language: "PHP",
-    bytes: 32075,
-  },
-  {
-    language: "Python",
-    bytes: 2966,
-  },
+  { language: "JavaScript", bytes: 90000 },
+  { language: "Python", bytes: 32500 },
+  { language: "Go", bytes: 32500 },
+  { language: "Rust", bytes: 24000 },
+  { language: "HTML", bytes: 24000 },
+  { language: "CSS", bytes: 12000 },
+  { language: "TypeScript", bytes: 12000 },
+  { language: "C++", bytes: 6000 },
+  { language: "Ruby", bytes: 2000 },
+  { language: "PHP", bytes: 2000 },
 ];
 
 export const dummyGraph = {
@@ -213,13 +200,13 @@ export const dummyPinned = [
 
 export const dummyFollowers = [
   {
-    login: "octocat",
-    name: "The Octocat",
-    avatar_url: "https://avatars.githubusercontent.com/u/583231?v=4",
-    html_url: "https://github.com/octocat",
-    bio: "GitHub's official mascot and your friendly octopussicorn.",
-    followers: 1120,
-    following: 12,
+    login: "sindresorhus",
+    name: "Sindre Sorhus",
+    avatar_url: "https://avatars.githubusercontent.com/u/170270?v=4",
+    html_url: "https://github.com/sindresorhus",
+    bio: "Creator of awesome lists, countless npm packages, and open source advocate.",
+    followers: 49000,
+    following: 0,
   },
   {
     login: "torvalds",

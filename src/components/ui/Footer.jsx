@@ -7,13 +7,13 @@ function Footer({ theme, setTheme }) {
     <footer className="w-full border-t border-neutral-700 px-4 py-10 text-sm text-neutral-500 dark:text-neutral-400">
       <div className="flex flex-col items-center gap-6">
         {/* Row: Toggle / Attribution / Share */}
-        <div className="flex w-full max-w-6xl items-center justify-between px-4">
+        <div className="flex w-full max-w-6xl flex-col items-center gap-3 sm:flex-row sm:justify-between">
           <ThemeToggle theme={theme} setTheme={setTheme} />
           <p className="text-center text-xs sm:text-sm">
             Built by{" "}
             <a
               href="https://github.com/ubcyukiny"
-              className="text-blue-400 hover:underline"
+              className="text-blue-500 hover:underline dark:text-blue-300"
               target="_blank"
               rel="noreferrer"
             >

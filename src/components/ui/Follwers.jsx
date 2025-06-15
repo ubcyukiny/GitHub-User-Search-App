@@ -3,7 +3,6 @@ import { dummyFollowers } from "../../data/dummyData";
 
 function Followers({ followers }) {
   const data = followers?.length ? followers : dummyFollowers;
-  console.log("followers: ", followers);
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">

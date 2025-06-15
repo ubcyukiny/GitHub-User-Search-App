@@ -7,11 +7,6 @@ function ThreeMonthHeatmap({ events, theme }) {
   const actualTheme = resolveTheme(theme);
 
   useEffect(() => {
-    console.log(
-      "Events in use:",
-      events.map((d) => d.created_at),
-    );
-
     const margin = { top: 30, right: 20, bottom: 40, left: 36 };
     const cellSize = 16;
     const today = new Date();
@@ -30,7 +25,6 @@ function ThreeMonthHeatmap({ events, theme }) {
       .append("svg")
       .attr("width", width)
       .attr("height", height);
-    console.log("Appended SVG:", svg.node());
 
     const g = svg
       .append("g")
@@ -83,7 +77,7 @@ function ThreeMonthHeatmap({ events, theme }) {
       .append("div")
       .attr(
         "class",
-        "tooltip text-sm px-2 py-1 bg-white dark:bg-neutral-800 text-black dark:text-white border border-neutral-200 dark:border-neutral-700 rounded",
+        "tooltip text-sm px-2 py-1 bg-white dark:bg-neutral-800 text-black dark:text-white border border-neutral-200 dark:border-neutral-700 rounded shadow transition-opacity duration-200",
       )
       .style("position", "absolute")
       .style("opacity", 0)
