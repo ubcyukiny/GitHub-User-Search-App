@@ -75,9 +75,11 @@ const DonutChart = ({ data }) => {
       <h2 className="mb-2 text-lg font-semibold text-neutral-800 dark:text-white">
         Language Usage (Recent 20 Repos)
       </h2>
-      <svg ref={ref} className="h-auto w-full max-w-96" />
+      <div className="flex justify-center">
+        <svg ref={ref} className="h-auto w-full max-w-96" />
+      </div>
       <div className="mt-4 flex flex-wrap justify-center gap-4">
-        {sortedData.map((d) => (
+        {sortedData.slice(0, 10).map((d) => (
           <div key={d.language} className="flex items-center gap-2 text-sm">
             <div
               className="h-3 w-3 rounded-full"

@@ -98,7 +98,7 @@ function UserCard({ userData }) {
             <div className="flex min-w-0 items-center gap-3">
               <CompanyIcon className="text-neutral-900 dark:text-white" />
               <p className="textPreset6 truncate text-neutral-500 dark:text-white">
-                {userData.company ? `@${userData.company}` : "Not Available"}
+                {userData.company ? userData.company : "Not Available"}
               </p>
             </div>
           </div>

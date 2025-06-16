@@ -2,9 +2,12 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import UserCard from "./components/ui/UserCard";
 import ErrorCard from "./components/ui/ErrorCard";
-import SkeletonUserCard from "./components/ui/skeletons/SkeletonUserCard";
+import UserCardSkeleton from "./components/ui/skeletons/UserCardSkeleton";
+import FollowersSkeleton from "./components/ui/skeletons/FollowersSkeleton";
 import ThreeMonthHeatmap from "./components/D3/ThreeMonthHeatmap";
-import SkeletonRepoCard from "./components/ui/skeletons/SkeletonRepoCard";
+import HeatmapSkeleton from "./components/ui/skeletons/HeatmapSkeleton";
+import PinnedReposSkeleton from "./components/ui/skeletons/PinnedRepoSkeleton";
+import DonutChartSkeleton from "./components/ui/skeletons/DonutChartSkeleton";
 import DonutChart from "./components/D3/Donut";
 import ForceGraph from "./components/D3/ForceGraph";
 import PinnedRepos from "./components/ui/PinnedRepos";
@@ -32,11 +35,16 @@ import {
 import { Routes, Route, useParams, useNavigate } from "react-router-dom";
 
 function App() {
-  const [loading, setLoading] = useState(false);
+  const [isUserLoading, setIsUserLoading] = useState(false);
+  const [isPinnedLoading, setIsPinnedLoading] = useState(false);
+  const [isFollowersLoading, setIsFollowersLoading] = useState(false);
+  const [isEventsLoading, setIsEventsLoading] = useState(false);
+  const [isDonutLoading, setisDonutLoading] = useState(false);
+
   const [error, setError] = useState(null);
   const [theme, setTheme] = useState("system");
   const [userData, setUserData] = useState(null);
-  const [userChart, setUserChart] = useState(null);
+  const [userDonut, setUserDonut] = useState(null);
   const [forceGraphData, setForceGraphData] = useState({
     nodes: [],
     links: [],
@@ -63,7 +71,13 @@ function App() {
 
   const handleSearch = async (input) => {
     if (!input) return;
-    setLoading(true);
+
+    setIsUserLoading(true);
+    setIsPinnedLoading(true);
+    setIsFollowersLoading(true);
+    setIsEventsLoading(true);
+    setisDonutLoading(true);
+    // user
     try {
       const res = await getUser(input);
       setUserData(res.data);
@@ -72,50 +86,15 @@ function App() {
       setUserData(null);
       setError(true);
     }
-    let topRepos;
-    try {
-      const repoRes = await getRepos(input);
-      topRepos = repoRes.data.slice(0, 20);
-    } catch (err) {
-      console.error("Repo fetch failed:", err);
-    }
+    setIsUserLoading(false);
 
-    const languageTotals = {};
-    let chartData = {};
-    for (const repo of topRepos) {
-      try {
-        const res = await getRepoLanguages(repo.owner.login, repo.name);
-        const langs = res.data;
-        for (const [lang, bytes] of Object.entries(langs)) {
-          languageTotals[lang] = (languageTotals[lang] || 0) + bytes;
-        }
-      } catch (err) {
-        console.error(`Error fetching languages for ${repo.name}`, err);
-      }
-
-      chartData = Object.entries(languageTotals).map(([language, bytes]) => ({
-        language,
-        bytes,
-      }));
-    }
-    setUserChart(chartData);
-    buildForceGraphData(input)
-      .then((data) => setForceGraphData(data))
-      .catch((err) => console.error("Graph data error:", err));
-
-    getUserEvents(input)
-      .then((data) => {
-        setEvents(data.data);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch events:", err);
-        setEvents([]);
-      });
-
+    // pinned repo
     getPinnedRepos(input)
       .then((data) => setPinned(data))
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setIsPinnedLoading(false));
 
+    // followers
     let baseFollowers = [];
     try {
       const res = await getFollowers(input);
@@ -135,8 +114,52 @@ function App() {
       console.error("Enriching follower details failed", err);
       setFollowers([]);
     }
+    setIsFollowersLoading(false);
 
-    setLoading(false);
+    // Events
+    getUserEvents(input)
+      .then((data) => {
+        setEvents(data.data);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch events:", err);
+        setEvents([]);
+      });
+    setIsEventsLoading(false);
+
+    // repo chart
+    let topRepos;
+    try {
+      const repoRes = await getRepos(input);
+      topRepos = repoRes.data.slice(0, 20);
+    } catch (err) {
+      console.error("Repo fetch failed:", err);
+    }
+    const languageTotals = {};
+    let chartData = {};
+    for (const repo of topRepos) {
+      try {
+        const res = await getRepoLanguages(repo.owner.login, repo.name);
+        const langs = res.data;
+        for (const [lang, bytes] of Object.entries(langs)) {
+          languageTotals[lang] = (languageTotals[lang] || 0) + bytes;
+        }
+      } catch (err) {
+        console.error(`Error fetching languages for ${repo.name}`, err);
+      }
+
+      chartData = Object.entries(languageTotals).map(([language, bytes]) => ({
+        language,
+        bytes,
+      }));
+    }
+    setUserDonut(chartData);
+    setisDonutLoading(false);
+
+    // graph
+    buildForceGraphData(input)
+      .then((data) => setForceGraphData(data))
+      .catch((err) => console.error("Graph data error:", err));
   };
 
   useEffect(() => {
@@ -176,21 +199,46 @@ function App() {
         <div className="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 sm:justify-items-stretch xl:grid-cols-3">
           {/* Column 1 */}
           <div className="flex w-full max-w-xl flex-col gap-6">
-            <UserCard userData={userData || dummyUser} />
-            <ThreeMonthHeatmap
-              theme={theme}
-              events={events.length > 0 ? events : dummyEvents}
-            />
-            {isTabletView && <DonutChart data={userChart || dummyChart} />}
+            {isUserLoading ? (
+              <UserCardSkeleton />
+            ) : (
+              <UserCard userData={userData || dummyUser} />
+            )}
+            {isEventsLoading ? (
+              <HeatmapSkeleton />
+            ) : (
+              <ThreeMonthHeatmap
+                theme={theme}
+                events={events.length > 0 ? events : dummyEvents}
+              />
+            )}
+            {isTabletView &&
+              (isDonutLoading ? (
+                <DonutChartSkeleton />
+              ) : (
+                <DonutChart data={userDonut || dummyChart} />
+              ))}
           </div>
 
           {/* Column 2 */}
           <div className="flex w-full max-w-xl flex-col gap-6">
-            <Followers followers={followers || dummyFollowers} />
-            <PinnedRepos repos={pinned.length > 0 ? pinned : dummyPinned} />
-            {!isTabletView && !isDesktopView && (
-              <DonutChart data={userChart || dummyChart} />
+            {isFollowersLoading ? (
+              <FollowersSkeleton />
+            ) : (
+              <Followers followers={followers || dummyFollowers} />
             )}
+            {isPinnedLoading ? (
+              <PinnedReposSkeleton />
+            ) : (
+              <PinnedRepos repos={pinned.length > 0 ? pinned : dummyPinned} />
+            )}
+            {!isTabletView &&
+              !isDesktopView &&
+              (isDonutLoading ? (
+                <DonutChartSkeleton />
+              ) : (
+                <DonutChart data={userDonut || dummyChart} />
+              ))}
             {!isTabletView && !isDesktopView && (
               <ForceGraph
                 theme={theme}
@@ -205,7 +253,7 @@ function App() {
                     : dummyGraph.links
                 }
               />
-            )}{" "}
+            )}
             {/* Mobile */}
             {isTabletView && (
               <ForceGraph
@@ -227,7 +275,11 @@ function App() {
           {/* Column 3 (desktop only) */}
           {isDesktopView && (
             <div className="flex w-full max-w-xl flex-col gap-6">
-              <DonutChart data={userChart || dummyChart} />
+              {isDonutLoading ? (
+                <DonutChartSkeleton />
+              ) : (
+                <DonutChart data={userDonut || dummyChart} />
+              )}
               <ForceGraph
                 theme={theme}
                 nodes={
