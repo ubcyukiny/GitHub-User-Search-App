@@ -11,9 +11,7 @@ const reservedUsernames = [
   "blog",
 ];
 
-function SearchBar({ onSearch, error, setError }) {
-  const [inputValue, setInputValue] = useState("");
-
+function SearchBar({ onSearch, error, setError, inputValue, setInputValue }) {
   const isValidUsername = (username) =>
     /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(username);
 
@@ -72,7 +70,7 @@ function SearchBar({ onSearch, error, setError }) {
         </div>
 
         <button
-          onClick={handleSearch}
+          onClick={() => handleSearch(inputValue)}
           className="textPreset5 rounded-[10px] bg-blue-500 px-5 py-3 text-white select-none hover:cursor-pointer hover:bg-blue-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none lg:px-4 lg:py-2"
         >
           Search

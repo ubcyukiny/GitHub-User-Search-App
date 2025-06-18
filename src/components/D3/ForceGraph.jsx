@@ -9,19 +9,6 @@ import { getLanguageColor } from "../../utils/colorUtils";
 import * as d3 from "d3";
 
 function ForceGraph({ nodes, links, theme }) {
-  if (!nodes || !links) {
-    return (
-      <div className="relative flex min-h-[500px] flex-col gap-4">
-        <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">
-          Language–Repo Force Graph
-        </h2>
-        <div className="text-center text-sm text-neutral-500 dark:text-neutral-300">
-          No data available for force graph visualization.
-        </div>
-      </div>
-    );
-  }
-
   const containerRef = useRef();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [fadingOut, setFadingOut] = useState(false);
@@ -43,7 +30,7 @@ function ForceGraph({ nodes, links, theme }) {
   }, []);
 
   useEffect(() => {
-    if (!nodes.length || !links.length || dimensions.width === 0) return;
+    if (!nodes?.length || !links?.length || dimensions.width === 0) return;
 
     const hasChanged =
       JSON.stringify(previousNodes.current.map((n) => n.id).sort()) !==
@@ -180,6 +167,19 @@ function ForceGraph({ nodes, links, theme }) {
       return () => simulation.stop();
     }
   }, [nodes, links, dimensions.width, dimensions.height, theme]);
+
+  if (!nodes || !links) {
+    return (
+      <div className="relative flex min-h-[500px] flex-col gap-4">
+        <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">
+          Language–Repo Force Graph
+        </h2>
+        <div className="text-center text-sm text-neutral-500 dark:text-neutral-300">
+          No data available for force graph visualization.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} className="relative flex flex-col gap-4">

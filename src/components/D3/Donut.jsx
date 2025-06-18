@@ -3,19 +3,6 @@ import { useEffect, useRef } from "react";
 import { getLanguageColor } from "../../utils/colorUtils";
 
 const DonutChart = ({ data }) => {
-  if (!data || data.length == 0) {
-    return (
-      <div className="relative flex min-h-[522px] flex-col gap-4">
-        <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">
-          Language Usage (Recent 20 Repos)
-        </h2>
-        <div className="text-center text-sm text-neutral-500 dark:text-neutral-300">
-          This user has no language data to display.
-        </div>
-      </div>
-    );
-  }
-
   const ref = useRef();
   const width = 300;
   const height = 300;
@@ -82,6 +69,19 @@ const DonutChart = ({ data }) => {
         return (t) => arc(i(t));
       });
   }, [data]);
+
+  if (!data || data.length == 0) {
+    return (
+      <div className="relative flex min-h-[522px] flex-col gap-4">
+        <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">
+          Language Usage (Recent 20 Repos)
+        </h2>
+        <div className="text-center text-sm text-neutral-500 dark:text-neutral-300">
+          This user has no language data to display.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex flex-col">

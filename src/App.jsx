@@ -33,7 +33,7 @@ import {
   getFollowers,
 } from "./api/githubAPI";
 import { Routes, Route, useParams, useNavigate } from "react-router-dom";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useTheme } from "./context/ThemeContext";
 
 function App() {
@@ -53,6 +53,7 @@ function App() {
   const [events, setEvents] = useState([]);
   const [pinned, setPinned] = useState([]);
   const [followers, setFollowers] = useState([]);
+  const [inputValue, setInputValue] = useState("");
 
   const { username } = useParams();
   const navigate = useNavigate();
@@ -60,13 +61,25 @@ function App() {
   const handleRouteSearch = (input) => {
     if (error) return; // Don't navigate if there's a known error
     if (!input || input === username) return;
-
+    setUserData(null);
+    setFollowers([]);
+    setPinned([]);
+    setEvents([]);
+    setUserDonut(null);
+    setForceGraphData({ nodes: [], links: [] });
+    setError(null);
     navigate(`/${input}`);
   };
 
   const handleSearch = async (input) => {
     const toastId = toast.loading("🔍 Searching GitHub user...");
-
+    setUserData(null);
+    setFollowers([]);
+    setPinned([]);
+    setEvents([]);
+    setUserDonut(null);
+    setForceGraphData({ nodes: [], links: [] });
+    setError(null);
     setIsUserLoading(true);
     setIsPinnedLoading(true);
     setIsFollowersLoading(true);
@@ -206,8 +219,10 @@ function App() {
     if (username) {
       handleSearch(username);
     } else {
+      setInputValue("");
       setUserData(null);
       setFollowers([]);
+      setPinned([]);
       setEvents([]);
       setUserDonut(null);
       setForceGraphData({ nodes: [], links: [] });
@@ -241,6 +256,8 @@ function App() {
           onSearch={handleRouteSearch}
           error={error}
           setError={setError}
+          inputValue={inputValue}
+          setInputValue={setInputValue}
         />
         <div className="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 sm:justify-items-stretch xl:grid-cols-3">
           {/* Column 1 */}
