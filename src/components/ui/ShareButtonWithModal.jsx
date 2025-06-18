@@ -1,11 +1,13 @@
 import { useRef, useState } from "react";
 
-export default function ShareButtonWithModal() {
+export default function ShareButtonWithModal({ userData }) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const inputRef = useRef();
 
-  const url = window.location.href;
+  const pathname = window.location.pathname;
+  const origin = window.location.origin;
+  const url = `${origin}${pathname.replace(/[^/]*$/, userData?.login || "")}`;
 
   const handleCopy = async () => {
     try {

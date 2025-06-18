@@ -2,7 +2,7 @@ import catLogo from "/assets/LogoMakr-devfinder.png";
 import ShareButtonWithModal from "./ShareButtonWithModal";
 import ThemeToggle from "./ThemeToggle";
 
-function Footer({ theme, setTheme }) {
+function Footer({ theme, setTheme, userData }) {
   return (
     <footer className="w-full border-t border-neutral-700 px-4 py-10 text-sm text-neutral-500 dark:text-neutral-400">
       <div className="flex flex-col items-center gap-6">
@@ -21,7 +21,7 @@ function Footer({ theme, setTheme }) {
             </a>{" "}
             · React · Tailwind CSS · D3.js · GitHub API
           </p>
-          <ShareButtonWithModal />
+          <ShareButtonWithModal userData={userData} />
         </div>
 
         {/* Centered Big Logo */}

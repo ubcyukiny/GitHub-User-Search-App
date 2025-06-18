@@ -6,7 +6,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { getLanguageColor } from "../../utils/colorUtils";
-import { resolveTheme } from "../../utils/resolveTheme";
 import * as d3 from "d3";
 
 function ForceGraph({ nodes, links, theme }) {
@@ -15,7 +14,6 @@ function ForceGraph({ nodes, links, theme }) {
   const [fadingOut, setFadingOut] = useState(false);
   const previousNodes = useRef([]);
   const ref = useRef();
-  const actualTheme = resolveTheme(theme);
   const effectiveRadius = 6;
 
   useEffect(() => {
@@ -94,7 +92,7 @@ function ForceGraph({ nodes, links, theme }) {
         .attr("r", effectiveRadius)
         .attr("fill", (d) =>
           d.type === "repo"
-            ? actualTheme === "dark"
+            ? theme === "dark"
               ? "#ffffff"
               : "#8b949e"
             : getLanguageColor(d.name),

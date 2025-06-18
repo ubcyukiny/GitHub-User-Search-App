@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import UserCard from "./components/ui/UserCard";
-import ErrorCard from "./components/ui/ErrorCard";
 import UserCardSkeleton from "./components/ui/skeletons/UserCardSkeleton";
 import FollowersSkeleton from "./components/ui/skeletons/FollowersSkeleton";
 import ThreeMonthHeatmap from "./components/D3/ThreeMonthHeatmap";
@@ -33,6 +32,8 @@ import {
   getFollowers,
 } from "./api/githubAPI";
 import { Routes, Route, useParams, useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
+import { useTheme } from "./context/ThemeContext";
 
 function App() {
   const [isUserLoading, setIsUserLoading] = useState(false);
@@ -40,9 +41,8 @@ function App() {
   const [isFollowersLoading, setIsFollowersLoading] = useState(false);
   const [isEventsLoading, setIsEventsLoading] = useState(false);
   const [isDonutLoading, setisDonutLoading] = useState(false);
-
+  const { theme, resolvedTheme } = useTheme();
   const [error, setError] = useState(null);
-  const [theme, setTheme] = useState("system");
   const [userData, setUserData] = useState(null);
   const [userDonut, setUserDonut] = useState(null);
   const [forceGraphData, setForceGraphData] = useState({
@@ -70,31 +70,60 @@ function App() {
   };
 
   const handleSearch = async (input) => {
-    if (!input) return;
+    if (!input) {
+      toast.error("❗ Please enter a username.");
+      return;
+    }
+    if (!/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(input)) {
+      setError("Invalid GitHub username format.");
+      toast.error("Invalid GitHub username format.");
+      return;
+    }
+
+    const toastId = toast.loading("🔍 Searching GitHub user...");
 
     setIsUserLoading(true);
     setIsPinnedLoading(true);
     setIsFollowersLoading(true);
     setIsEventsLoading(true);
     setisDonutLoading(true);
-    // user
+
     try {
+      // User Info
       const res = await getUser(input);
       setUserData(res.data);
+      toast.loading("User found. Loading pinned repos...", { id: toastId });
       setError(false);
     } catch (err) {
-      setUserData(null);
-      setError(true);
+      setError("Username not found. Please try again.");
+      toast.error("User not found. Try another username.", {
+        id: toastId,
+        duration: 4000,
+      });
+      setIsUserLoading(false);
+      setIsFollowersLoading(false);
+      setIsPinnedLoading(false);
+      setIsEventsLoading(false);
+      setisDonutLoading(false);
+      return;
     }
     setIsUserLoading(false);
 
-    // pinned repo
-    getPinnedRepos(input)
-      .then((data) => setPinned(data))
-      .catch(console.error)
-      .finally(() => setIsPinnedLoading(false));
+    // Pinned Repos
+    try {
+      const pinnedData = await getPinnedRepos(input);
+      setPinned(pinnedData.slice(0, 4));
+      toast.loading("Pinned repos loaded. Fetching followers...", {
+        id: toastId,
+      });
+    } catch (err) {
+      console.error("Pinned repo fetch failed:", err);
+      setPinned([]);
+      toast("No pinned repos found.", { id: toastId });
+    }
+    setIsPinnedLoading(false);
 
-    // followers
+    // Followers
     let baseFollowers = [];
     try {
       const res = await getFollowers(input);
@@ -102,70 +131,82 @@ function App() {
     } catch (err) {
       console.error("Followers fetch failed:", err);
       setFollowers([]);
-      return;
+      toast("Could not load followers.", { id: toastId });
     }
 
     try {
-      const enriched = await Promise.all(
-        baseFollowers.map((f) => getUser(f.login).then((res) => res.data)),
-      );
-      setFollowers(enriched);
+      if (baseFollowers.length > 0) {
+        const enriched = await Promise.all(
+          baseFollowers.map((f) => getUser(f.login).then((res) => res.data)),
+        );
+        setFollowers(enriched);
+        toast.loading("Followers loaded. Grabbing events...", {
+          id: toastId,
+        });
+      } else {
+        setFollowers([]);
+        toast("No followers to display.", { id: toastId });
+      }
     } catch (err) {
-      console.error("Enriching follower details failed", err);
+      console.error("Enriching follower details failed:", err);
       setFollowers([]);
+      toast("Could not load follower details.", { id: toastId });
     }
     setIsFollowersLoading(false);
 
     // Events
-    getUserEvents(input)
-      .then((data) => {
-        setEvents(data.data);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch events:", err);
-        setEvents([]);
-      });
+    try {
+      const eventsRes = await getUserEvents(input);
+      setEvents(eventsRes.data);
+      toast.loading("Events loaded. Generating chart...", { id: toastId });
+    } catch (err) {
+      console.error("Event fetch failed:", err);
+      setEvents([]);
+      toast("No recent events found.", { id: toastId });
+    }
     setIsEventsLoading(false);
 
-    // repo chart
-    let topRepos;
+    // Donut Chart
+    let topRepos = [];
     try {
       const repoRes = await getRepos(input);
       topRepos = repoRes.data.slice(0, 20);
     } catch (err) {
       console.error("Repo fetch failed:", err);
+      toast("Failed to fetch repos.", { id: toastId });
     }
+
     const languageTotals = {};
-    let chartData = {};
+    let chartData = [];
     for (const repo of topRepos) {
       try {
         const res = await getRepoLanguages(repo.owner.login, repo.name);
-        const langs = res.data;
-        for (const [lang, bytes] of Object.entries(langs)) {
+        for (const [lang, bytes] of Object.entries(res.data)) {
           languageTotals[lang] = (languageTotals[lang] || 0) + bytes;
         }
       } catch (err) {
         console.error(`Error fetching languages for ${repo.name}`, err);
       }
-
-      chartData = Object.entries(languageTotals).map(([language, bytes]) => ({
-        language,
-        bytes,
-      }));
     }
+    chartData = Object.entries(languageTotals).map(([language, bytes]) => ({
+      language,
+      bytes,
+    }));
     setUserDonut(chartData);
+    toast.loading("Chart ready. Finalizing graph...", { id: toastId });
     setisDonutLoading(false);
 
-    // graph
-    buildForceGraphData(input)
-      .then((data) => setForceGraphData(data))
-      .catch((err) => console.error("Graph data error:", err));
+    // Force Graph
+    try {
+      const graphData = await buildForceGraphData(input);
+      setForceGraphData(graphData);
+      toast.success("All data loaded successfully!", { id: toastId });
+    } catch (err) {
+      console.error("Force graph fetch failed:", err);
+      setForceGraphData({ nodes: [], links: [] });
+      toast.success("Data loaded (no graph)", { id: toastId });
+    }
   };
-
-  useEffect(() => {
-    const resolvedTheme = theme === "system" ? getPreferredTheme() : theme;
-    document.documentElement.classList.toggle("dark", resolvedTheme === "dark");
-  }, [theme]);
 
   useEffect(() => {
     if (username) {
@@ -194,8 +235,12 @@ function App() {
 
   const content = (
     <div className="flex w-full justify-center">
-      <div className="flex max-w-screen-2xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-12 xl:px-24">
-        <Header onSearch={handleRouteSearch} />
+      <div className="flex max-w-screen-2xl flex-col gap-6 px-4 py-12 sm:px-6 lg:px-12 xl:px-24">
+        <Header
+          onSearch={handleRouteSearch}
+          error={error}
+          setError={setError}
+        />
         <div className="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 sm:justify-items-stretch xl:grid-cols-3">
           {/* Column 1 */}
           <div className="flex w-full max-w-xl flex-col gap-6">
@@ -208,7 +253,7 @@ function App() {
               <HeatmapSkeleton />
             ) : (
               <ThreeMonthHeatmap
-                theme={theme}
+                theme={resolvedTheme}
                 events={events.length > 0 ? events : dummyEvents}
               />
             )}
@@ -241,7 +286,7 @@ function App() {
               ))}
             {!isTabletView && !isDesktopView && (
               <ForceGraph
-                theme={theme}
+                theme={resolvedTheme}
                 nodes={
                   forceGraphData.nodes.length > 0
                     ? forceGraphData.nodes
@@ -257,7 +302,7 @@ function App() {
             {/* Mobile */}
             {isTabletView && (
               <ForceGraph
-                theme={theme}
+                theme={resolvedTheme}
                 nodes={
                   forceGraphData.nodes.length > 0
                     ? forceGraphData.nodes
@@ -281,7 +326,7 @@ function App() {
                 <DonutChart data={userDonut || dummyChart} />
               )}
               <ForceGraph
-                theme={theme}
+                theme={resolvedTheme}
                 nodes={
                   forceGraphData.nodes.length > 0
                     ? forceGraphData.nodes
@@ -296,8 +341,7 @@ function App() {
             </div>
           )}
         </div>
-
-        <Footer theme={theme} setTheme={setTheme} />
+        <Footer theme={theme} userData={userData} />
       </div>
     </div>
   );

@@ -1,10 +1,8 @@
 import { useEffect, useRef } from "react";
-import { resolveTheme } from "../../utils/resolveTheme";
 import * as d3 from "d3";
 
 function ThreeMonthHeatmap({ events, theme }) {
   const ref = useRef();
-  const actualTheme = resolveTheme(theme);
 
   useEffect(() => {
     const margin = { top: 30, right: 20, bottom: 40, left: 36 };
@@ -43,7 +41,7 @@ function ThreeMonthHeatmap({ events, theme }) {
       .scaleThreshold()
       .domain([1, 2, 3, 4])
       .range(
-        actualTheme === "dark"
+        theme === "dark"
           ? ["#3a3a3a", "#3f6846", "#4caf50", "#43d17a", "#a1f4c4"]
           : ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"],
       );
@@ -77,7 +75,7 @@ function ThreeMonthHeatmap({ events, theme }) {
       .append("div")
       .attr(
         "class",
-        "tooltip text-sm px-2 py-1 bg-white dark:bg-neutral-800 text-black dark:text-white border border-neutral-200 dark:border-neutral-700 rounded shadow transition-opacity duration-200",
+        "tooltip text-sm px-2 py-1 bg-white dark:bg-neutral-800 text-black dark:text-white border border-neutral-200 dark:border-neutral-700 rounded shadow ",
       )
       .style("position", "absolute")
       .style("opacity", 0)

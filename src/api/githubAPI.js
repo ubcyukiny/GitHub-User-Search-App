@@ -37,9 +37,7 @@ export const getRepoLanguages = async (username, repoName) => {
 };
 
 export const buildForceGraphData = async (username) => {
-  console.log("building force graph with: ", username);
   const response = await getRepos(username);
-  console.log("response from force graph : ", response);
 
   const repos = response?.data ?? [];
 
@@ -77,7 +75,6 @@ export const buildForceGraphData = async (username) => {
       });
     }
   }
-  console.log("nodes, links: ", { nodes, links });
   return { nodes, links };
 };
 

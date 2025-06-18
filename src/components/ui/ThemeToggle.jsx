@@ -1,5 +1,8 @@
 import { SystemIcon, MoonIcon, SunIcon } from "../icons";
-function ThemeToggle({ theme, setTheme }) {
+import { useTheme } from "../../context/ThemeContext";
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
   const isActive = (value) => theme === value;
 
   return (
