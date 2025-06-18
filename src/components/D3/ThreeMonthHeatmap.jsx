@@ -4,6 +4,19 @@ import * as d3 from "d3";
 function ThreeMonthHeatmap({ events, theme }) {
   const ref = useRef();
 
+  if (!events) {
+    return (
+      <div className="flex min-h-[274px] flex-col gap-4">
+        <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">
+          GitHub Contribution Activity
+        </h2>
+        <div className="text-center text-sm text-neutral-500 dark:text-neutral-300">
+          This user has no activity to display.
+        </div>
+      </div>
+    );
+  }
+
   useEffect(() => {
     const margin = { top: 30, right: 20, bottom: 40, left: 36 };
     const cellSize = 16;

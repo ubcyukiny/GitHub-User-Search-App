@@ -73,19 +73,30 @@ function UserCard({ userData }) {
           {/* Links */}
           <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
             <div className="flex min-w-0 items-center gap-3">
-              <LocationIcon className="text-neutral-900 dark:text-white" />
+              <LocationIcon className="flex-shrink-0 text-neutral-900 dark:text-white" />
               <p className="textPreset6 truncate text-neutral-500 dark:text-white">
                 {userData.location || "Not Available"}
               </p>
             </div>
             <div className="flex min-w-0 items-center gap-3">
-              <TwitterIcon className="text-neutral-900 dark:text-white" />
-              <p className="textPreset6 truncate text-neutral-500 dark:text-white">
-                {userData.twitter_username || "Not Available"}
-              </p>
+              <TwitterIcon className="flex-shrink-0 text-neutral-900 dark:text-white" />
+              {userData.twitter_username ? (
+                <a
+                  href={`https://twitter.com/${userData.twitter_username}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="textPreset6 truncate text-neutral-500 hover:underline dark:text-white"
+                >
+                  @{userData.twitter_username}
+                </a>
+              ) : (
+                <p className="textPreset6 truncate text-neutral-500 dark:text-white">
+                  Not Available
+                </p>
+              )}
             </div>
             <div className="flex min-w-0 items-center gap-3">
-              <WebsiteIcon className="text-neutral-900 dark:text-white" />
+              <WebsiteIcon className="flex-shrink-0 text-neutral-900 dark:text-white" />
               <a
                 href={userData.blog}
                 target="_blank"
@@ -96,7 +107,7 @@ function UserCard({ userData }) {
               </a>
             </div>
             <div className="flex min-w-0 items-center gap-3">
-              <CompanyIcon className="text-neutral-900 dark:text-white" />
+              <CompanyIcon className="flex-shrink-0 text-neutral-900 dark:text-white" />
               <p className="textPreset6 truncate text-neutral-500 dark:text-white">
                 {userData.company ? userData.company : "Not Available"}
               </p>

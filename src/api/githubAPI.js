@@ -40,12 +40,17 @@ export const buildForceGraphData = async (username) => {
   const response = await getRepos(username);
 
   const repos = response?.data ?? [];
+  console.log(`[ForceGraph] Total repos fetched: ${repos.length}`);
 
   const nodes = [];
   const links = [];
   const langSet = new Set();
 
-  const topRepos = repos.filter((r) => !r.fork).slice(0, 20);
+  const topRepos = repos.slice(0, 20);
+  console.log(
+    `[ForceGraph] Top non-forked repos:`,
+    topRepos.map((r) => r.name),
+  );
 
   for (const repo of topRepos) {
     const repoId = `repo:${repo.name}`;
@@ -57,6 +62,7 @@ export const buildForceGraphData = async (username) => {
     });
 
     const { data: langObj } = await getRepoLanguages(username, repo.name);
+    console.log(`[ForceGraph] Languages for ${repo.name}:`, langObj);
 
     for (const lang in langObj) {
       const langId = `lang:${lang}`;
@@ -75,6 +81,8 @@ export const buildForceGraphData = async (username) => {
       });
     }
   }
+  console.log(`[ForceGraph] Final nodes:`, nodes);
+  console.log(`[ForceGraph] Final links:`, links);
   return { nodes, links };
 };
 

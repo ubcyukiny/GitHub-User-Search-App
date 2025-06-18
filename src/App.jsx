@@ -13,6 +13,7 @@ import PinnedRepos from "./components/ui/PinnedRepos";
 import Followers from "./components/ui/Follwers";
 import Header from "./components/ui/Header";
 import Footer from "./components/ui/Footer";
+import handleApiError from "./utils/handleApiError";
 
 import {
   dummyChart,
@@ -52,34 +53,18 @@ function App() {
   const [events, setEvents] = useState([]);
   const [pinned, setPinned] = useState([]);
   const [followers, setFollowers] = useState([]);
+
   const { username } = useParams();
   const navigate = useNavigate();
 
-  const getPreferredTheme = () => {
-    if (typeof window !== "undefined" && window.matchMedia) {
-      return window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
-    }
-    return "light";
-  };
-
   const handleRouteSearch = (input) => {
+    if (error) return; // Don't navigate if there's a known error
     if (!input || input === username) return;
+
     navigate(`/${input}`);
   };
 
   const handleSearch = async (input) => {
-    if (!input) {
-      toast.error("❗ Please enter a username.");
-      return;
-    }
-    if (!/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(input)) {
-      setError("Invalid GitHub username format.");
-      toast.error("Invalid GitHub username format.");
-      return;
-    }
-
     const toastId = toast.loading("🔍 Searching GitHub user...");
 
     setIsUserLoading(true);
@@ -87,19 +72,29 @@ function App() {
     setIsFollowersLoading(true);
     setIsEventsLoading(true);
     setisDonutLoading(true);
-
     try {
       // User Info
       const res = await getUser(input);
       setUserData(res.data);
-      toast.loading("User found. Loading pinned repos...", { id: toastId });
+      if (
+        res.data.public_repos === 0 &&
+        res.data.followers === 0 &&
+        res.data.public_gists === 0
+      ) {
+        toast.error("This user has no public activity.", { id: toastId });
+        setIsUserLoading(false);
+        setIsFollowersLoading(false);
+        setIsPinnedLoading(false);
+        setIsEventsLoading(false);
+        setisDonutLoading(false);
+        return;
+      }
       setError(false);
+      toast.loading("User found. Loading pinned repos...", { id: toastId });
     } catch (err) {
+      setUserData(null);
       setError("Username not found. Please try again.");
-      toast.error("User not found. Try another username.", {
-        id: toastId,
-        duration: 4000,
-      });
+      handleApiError(err, "Fetching user failed", toastId);
       setIsUserLoading(false);
       setIsFollowersLoading(false);
       setIsPinnedLoading(false);
@@ -117,9 +112,8 @@ function App() {
         id: toastId,
       });
     } catch (err) {
-      console.error("Pinned repo fetch failed:", err);
       setPinned([]);
-      toast("No pinned repos found.", { id: toastId });
+      handleApiError(err, "Fetching pinned repos failed", toastId);
     }
     setIsPinnedLoading(false);
 
@@ -129,9 +123,8 @@ function App() {
       const res = await getFollowers(input);
       baseFollowers = res.data.slice(0, 4);
     } catch (err) {
-      console.error("Followers fetch failed:", err);
       setFollowers([]);
-      toast("Could not load followers.", { id: toastId });
+      handleApiError(err, "Fetching followers failed", toastId);
     }
 
     try {
@@ -140,17 +133,14 @@ function App() {
           baseFollowers.map((f) => getUser(f.login).then((res) => res.data)),
         );
         setFollowers(enriched);
-        toast.loading("Followers loaded. Grabbing events...", {
-          id: toastId,
-        });
+        toast.loading("Followers loaded. Grabbing events...", { id: toastId });
       } else {
         setFollowers([]);
         toast("No followers to display.", { id: toastId });
       }
     } catch (err) {
-      console.error("Enriching follower details failed:", err);
       setFollowers([]);
-      toast("Could not load follower details.", { id: toastId });
+      handleApiError(err, "Enriching follower details failed", toastId);
     }
     setIsFollowersLoading(false);
 
@@ -160,24 +150,22 @@ function App() {
       setEvents(eventsRes.data);
       toast.loading("Events loaded. Generating chart...", { id: toastId });
     } catch (err) {
-      console.error("Event fetch failed:", err);
       setEvents([]);
-      toast("No recent events found.", { id: toastId });
+      handleApiError(err, "Fetching events failed", toastId);
     }
     setIsEventsLoading(false);
 
-    // Donut Chart
+    // Donut Chart (Languages)
     let topRepos = [];
     try {
       const repoRes = await getRepos(input);
       topRepos = repoRes.data.slice(0, 20);
     } catch (err) {
-      console.error("Repo fetch failed:", err);
-      toast("Failed to fetch repos.", { id: toastId });
+      topRepos = [];
+      handleApiError(err, "Fetching user repos failed", toastId);
     }
 
     const languageTotals = {};
-    let chartData = [];
     for (const repo of topRepos) {
       try {
         const res = await getRepoLanguages(repo.owner.login, repo.name);
@@ -185,16 +173,22 @@ function App() {
           languageTotals[lang] = (languageTotals[lang] || 0) + bytes;
         }
       } catch (err) {
-        console.error(`Error fetching languages for ${repo.name}`, err);
+        handleApiError(
+          err,
+          `Fetching languages for ${repo.name} failed`,
+          toastId,
+        );
       }
     }
-    chartData = Object.entries(languageTotals).map(([language, bytes]) => ({
-      language,
-      bytes,
-    }));
+    const chartData = Object.entries(languageTotals).map(
+      ([language, bytes]) => ({
+        language,
+        bytes,
+      }),
+    );
     setUserDonut(chartData);
-    toast.loading("Chart ready. Finalizing graph...", { id: toastId });
     setisDonutLoading(false);
+    toast.loading("Chart ready. Finalizing graph...", { id: toastId });
 
     // Force Graph
     try {
@@ -202,8 +196,8 @@ function App() {
       setForceGraphData(graphData);
       toast.success("All data loaded successfully!", { id: toastId });
     } catch (err) {
-      console.error("Force graph fetch failed:", err);
       setForceGraphData({ nodes: [], links: [] });
+      handleApiError(err, "Building force graph failed", toastId);
       toast.success("Data loaded (no graph)", { id: toastId });
     }
   };
@@ -211,6 +205,13 @@ function App() {
   useEffect(() => {
     if (username) {
       handleSearch(username);
+    } else {
+      setUserData(null);
+      setFollowers([]);
+      setEvents([]);
+      setUserDonut(null);
+      setForceGraphData({ nodes: [], links: [] });
+      setError(null);
     }
   }, [username]);
 
@@ -234,7 +235,7 @@ function App() {
   const isDesktopView = useMediaQuery("(min-width: 1280px)");
 
   const content = (
-    <div className="flex w-full justify-center">
+    <div className="sm:px-none flex w-full justify-center px-6">
       <div className="flex max-w-screen-2xl flex-col gap-6 px-4 py-12 sm:px-6 lg:px-12 xl:px-24">
         <Header
           onSearch={handleRouteSearch}
@@ -254,14 +255,18 @@ function App() {
             ) : (
               <ThreeMonthHeatmap
                 theme={resolvedTheme}
-                events={events.length > 0 ? events : dummyEvents}
+                events={
+                  userData ? (events.length > 0 ? events : null) : dummyEvents
+                }
               />
             )}
             {isTabletView &&
               (isDonutLoading ? (
                 <DonutChartSkeleton />
               ) : (
-                <DonutChart data={userDonut || dummyChart} />
+                <DonutChart
+                  data={userData ? (userDonut ? userDonut : null) : dummyChart}
+                />
               ))}
           </div>
 
@@ -270,31 +275,49 @@ function App() {
             {isFollowersLoading ? (
               <FollowersSkeleton />
             ) : (
-              <Followers followers={followers || dummyFollowers} />
+              <Followers
+                followers={
+                  userData
+                    ? followers?.length > 0
+                      ? followers
+                      : null
+                    : dummyFollowers
+                }
+              />
             )}
             {isPinnedLoading ? (
               <PinnedReposSkeleton />
             ) : (
-              <PinnedRepos repos={pinned.length > 0 ? pinned : dummyPinned} />
+              <PinnedRepos
+                repos={
+                  userData ? (pinned.length > 0 ? pinned : null) : dummyPinned
+                }
+              />
             )}
             {!isTabletView &&
               !isDesktopView &&
               (isDonutLoading ? (
                 <DonutChartSkeleton />
               ) : (
-                <DonutChart data={userDonut || dummyChart} />
+                <DonutChart
+                  data={userData ? (userDonut ? userDonut : null) : dummyChart}
+                />
               ))}
             {!isTabletView && !isDesktopView && (
               <ForceGraph
                 theme={resolvedTheme}
                 nodes={
-                  forceGraphData.nodes.length > 0
-                    ? forceGraphData.nodes
+                  userData
+                    ? forceGraphData.nodes.length > 0
+                      ? forceGraphData.nodes
+                      : null
                     : dummyGraph.nodes
                 }
                 links={
-                  forceGraphData.links.length > 0
-                    ? forceGraphData.links
+                  userData
+                    ? forceGraphData.links.length > 0
+                      ? forceGraphData.links
+                      : null
                     : dummyGraph.links
                 }
               />
@@ -304,13 +327,17 @@ function App() {
               <ForceGraph
                 theme={resolvedTheme}
                 nodes={
-                  forceGraphData.nodes.length > 0
-                    ? forceGraphData.nodes
+                  userData
+                    ? forceGraphData.nodes.length > 0
+                      ? forceGraphData.nodes
+                      : null
                     : dummyGraph.nodes
                 }
                 links={
-                  forceGraphData.links.length > 0
-                    ? forceGraphData.links
+                  userData
+                    ? forceGraphData.links.length > 0
+                      ? forceGraphData.links
+                      : null
                     : dummyGraph.links
                 }
               />
@@ -323,18 +350,24 @@ function App() {
               {isDonutLoading ? (
                 <DonutChartSkeleton />
               ) : (
-                <DonutChart data={userDonut || dummyChart} />
+                <DonutChart
+                  data={userData ? (userDonut ? userDonut : null) : dummyChart}
+                />
               )}
               <ForceGraph
                 theme={resolvedTheme}
                 nodes={
-                  forceGraphData.nodes.length > 0
-                    ? forceGraphData.nodes
+                  userData
+                    ? forceGraphData.nodes.length > 0
+                      ? forceGraphData.nodes
+                      : null
                     : dummyGraph.nodes
                 }
                 links={
-                  forceGraphData.links.length > 0
-                    ? forceGraphData.links
+                  userData
+                    ? forceGraphData.links.length > 0
+                      ? forceGraphData.links
+                      : null
                     : dummyGraph.links
                 }
               />

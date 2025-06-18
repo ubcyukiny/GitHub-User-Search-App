@@ -2,19 +2,46 @@ import { SearchIcon } from "../icons";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
+const reservedUsernames = [
+  "about",
+  "settings",
+  "admin",
+  "site",
+  "support",
+  "blog",
+];
+
 function SearchBar({ onSearch, error, setError }) {
   const [inputValue, setInputValue] = useState("");
 
   const isValidUsername = (username) =>
     /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(username);
 
-  const handleClick = () => {
-    if (isValidUsername(inputValue)) {
-      onSearch(inputValue);
-    } else {
-      toast.error("Invalid GitHub username format.");
-      setError("Invalid GitHub username format.");
+  const handleSearch = (inputValue) => {
+    const trimmed = inputValue.trim();
+    const errorToastId = "input-error";
+    // Clear previous errors
+    setError(null);
+
+    if (!trimmed) {
+      toast.error("Please enter a GitHub username.", { id: errorToastId });
+      setError("Please enter a GitHub username.");
+      return;
     }
+
+    if (!isValidUsername(trimmed)) {
+      toast.error("Invalid GitHub username format.", { id: errorToastId });
+      setError("Invalid GitHub username format.");
+      return;
+    }
+
+    if (reservedUsernames.includes(trimmed.toLowerCase())) {
+      toast.error("This username is reserved by GitHub.", { id: errorToastId });
+      setError("This username is reserved by GitHub.");
+      return;
+    }
+
+    onSearch(trimmed);
   };
 
   return (
@@ -35,7 +62,7 @@ function SearchBar({ onSearch, error, setError }) {
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                onSearch(inputValue);
+                handleSearch(inputValue);
               }
             }}
             className={`textPreset3Mobile sm:textPreset3 w-full min-w-52 bg-transparent px-2 placeholder-neutral-500 outline-none dark:placeholder-neutral-50 ${error ? "text-red-500" : "text-neutral-500 dark:text-neutral-50"} `}
@@ -45,7 +72,7 @@ function SearchBar({ onSearch, error, setError }) {
         </div>
 
         <button
-          onClick={handleClick}
+          onClick={handleSearch}
           className="textPreset5 rounded-[10px] bg-blue-500 px-5 py-3 text-white select-none hover:cursor-pointer hover:bg-blue-300 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none lg:px-4 lg:py-2"
         >
           Search

@@ -1,4 +1,3 @@
-import catLogo from "/assets/LogoMakr-devfinder.png";
 import ShareButtonWithModal from "./ShareButtonWithModal";
 import ThemeToggle from "./ThemeToggle";
 
@@ -23,14 +22,6 @@ function Footer({ theme, setTheme, userData }) {
           </p>
           <ShareButtonWithModal userData={userData} />
         </div>
-
-        {/* Centered Big Logo */}
-        <img
-          src={catLogo}
-          alt="Devfinder logo"
-          className="h-32 w-auto sm:h-36 md:h-40 lg:h-48"
-          draggable={false}
-        />
       </div>
     </footer>
   );
