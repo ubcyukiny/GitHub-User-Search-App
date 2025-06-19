@@ -193,7 +193,7 @@ function App() {
     let topRepos = [];
     try {
       const repoRes = await getRepos(input);
-      topRepos = repoRes.data.slice(0, 20);
+      topRepos = repoRes.data;
     } catch (err) {
       toast.error(err, { id: toastId });
 
@@ -273,146 +273,154 @@ function App() {
   const isDesktopView = useMediaQuery("(min-width: 1280px)");
 
   const content = (
-    <div className="sm:px-none flex w-full justify-center px-6">
-      <div className="flex max-w-screen-2xl flex-col gap-6 px-4 py-12 sm:px-6 lg:px-12 xl:px-24">
-        <Header
-          onSearch={handleRouteSearch}
-          error={error}
-          setError={setError}
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-        />
-        <div className="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 sm:justify-items-stretch xl:grid-cols-3">
-          {/* Column 1 */}
-          <div className="flex w-full max-w-xl flex-col gap-6">
-            {isUserLoading ? (
-              <UserCardSkeleton />
-            ) : (
-              <UserCard userData={userData || dummyUser} />
-            )}
-            {isEventsLoading ? (
-              <HeatmapSkeleton />
-            ) : (
-              <ThreeMonthHeatmap
-                theme={resolvedTheme}
-                events={userData ? (events ? events : null) : dummyEvents}
-              />
-            )}
-            {isTabletView &&
-              (isDonutLoading ? (
-                <DonutChartSkeleton />
-              ) : (
-                <DonutChart
-                  data={userData ? (userDonut ? userDonut : null) : dummyChart}
-                />
-              ))}
-          </div>
-
-          {/* Column 2 */}
-          <div className="flex w-full max-w-xl flex-col gap-6">
-            {isFollowersLoading ? (
-              <FollowersSkeleton />
-            ) : (
-              <Followers
-                followers={
-                  userData
-                    ? followers?.length > 0
-                      ? followers
-                      : null
-                    : dummyFollowers
-                }
-              />
-            )}
-            {isPinnedLoading ? (
-              <PinnedReposSkeleton />
-            ) : (
-              <PinnedRepos
-                repos={
-                  userData ? (pinned.length > 0 ? pinned : null) : dummyPinned
-                }
-              />
-            )}
-            {!isTabletView &&
-              !isDesktopView &&
-              (isDonutLoading ? (
-                <DonutChartSkeleton />
-              ) : (
-                <DonutChart
-                  data={userData ? (userDonut ? userDonut : null) : dummyChart}
-                />
-              ))}
-            {!isTabletView && !isDesktopView && (
-              <ForceGraph
-                theme={resolvedTheme}
-                nodes={
-                  userData
-                    ? forceGraphData.nodes.length > 0
-                      ? forceGraphData.nodes
-                      : null
-                    : dummyGraph.nodes
-                }
-                links={
-                  userData
-                    ? forceGraphData.links.length > 0
-                      ? forceGraphData.links
-                      : null
-                    : dummyGraph.links
-                }
-              />
-            )}
-            {/* Mobile */}
-            {isTabletView && (
-              <ForceGraph
-                theme={resolvedTheme}
-                nodes={
-                  userData
-                    ? forceGraphData.nodes.length > 0
-                      ? forceGraphData.nodes
-                      : null
-                    : dummyGraph.nodes
-                }
-                links={
-                  userData
-                    ? forceGraphData.links.length > 0
-                      ? forceGraphData.links
-                      : null
-                    : dummyGraph.links
-                }
-              />
-            )}
-          </div>
-
-          {/* Column 3 (desktop only) */}
-          {isDesktopView && (
+    <div className="min-h-screen w-full overflow-y-auto bg-neutral-100 dark:bg-neutral-900">
+      <div className="sm:px-none flex w-full justify-center px-6">
+        <div className="flex max-w-screen-2xl flex-col gap-6 px-4 py-12 sm:px-6 lg:px-12 xl:px-24">
+          <Header
+            onSearch={handleRouteSearch}
+            error={error}
+            setError={setError}
+            inputValue={inputValue}
+            setInputValue={setInputValue}
+          />
+          <div className="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 sm:justify-items-stretch xl:grid-cols-3">
+            {/* Column 1 */}
             <div className="flex w-full max-w-xl flex-col gap-6">
-              {isDonutLoading ? (
-                <DonutChartSkeleton />
+              {isUserLoading ? (
+                <UserCardSkeleton />
               ) : (
-                <DonutChart
-                  data={userData ? (userDonut ? userDonut : null) : dummyChart}
+                <UserCard userData={userData || dummyUser} />
+              )}
+              {isEventsLoading ? (
+                <HeatmapSkeleton />
+              ) : (
+                <ThreeMonthHeatmap
+                  theme={resolvedTheme}
+                  events={userData ? (events ? events : null) : dummyEvents}
                 />
               )}
-              <ForceGraph
-                theme={resolvedTheme}
-                nodes={
-                  userData
-                    ? forceGraphData.nodes.length > 0
-                      ? forceGraphData.nodes
-                      : null
-                    : dummyGraph.nodes
-                }
-                links={
-                  userData
-                    ? forceGraphData.links.length > 0
-                      ? forceGraphData.links
-                      : null
-                    : dummyGraph.links
-                }
-              />
+              {isTabletView &&
+                (isDonutLoading ? (
+                  <DonutChartSkeleton />
+                ) : (
+                  <DonutChart
+                    data={
+                      userData ? (userDonut ? userDonut : null) : dummyChart
+                    }
+                  />
+                ))}
             </div>
-          )}
+
+            {/* Column 2 */}
+            <div className="flex w-full max-w-xl flex-col gap-6">
+              {isFollowersLoading ? (
+                <FollowersSkeleton />
+              ) : (
+                <Followers
+                  followers={
+                    userData
+                      ? followers?.length > 0
+                        ? followers
+                        : null
+                      : dummyFollowers
+                  }
+                />
+              )}
+              {isPinnedLoading ? (
+                <PinnedReposSkeleton />
+              ) : (
+                <PinnedRepos
+                  repos={
+                    userData ? (pinned.length > 0 ? pinned : null) : dummyPinned
+                  }
+                />
+              )}
+              {!isTabletView &&
+                !isDesktopView &&
+                (isDonutLoading ? (
+                  <DonutChartSkeleton />
+                ) : (
+                  <DonutChart
+                    data={
+                      userData ? (userDonut ? userDonut : null) : dummyChart
+                    }
+                  />
+                ))}
+              {!isTabletView && !isDesktopView && (
+                <ForceGraph
+                  theme={resolvedTheme}
+                  nodes={
+                    userData
+                      ? forceGraphData.nodes.length > 0
+                        ? forceGraphData.nodes
+                        : null
+                      : dummyGraph.nodes
+                  }
+                  links={
+                    userData
+                      ? forceGraphData.links.length > 0
+                        ? forceGraphData.links
+                        : null
+                      : dummyGraph.links
+                  }
+                />
+              )}
+              {/* Mobile */}
+              {isTabletView && (
+                <ForceGraph
+                  theme={resolvedTheme}
+                  nodes={
+                    userData
+                      ? forceGraphData.nodes.length > 0
+                        ? forceGraphData.nodes
+                        : null
+                      : dummyGraph.nodes
+                  }
+                  links={
+                    userData
+                      ? forceGraphData.links.length > 0
+                        ? forceGraphData.links
+                        : null
+                      : dummyGraph.links
+                  }
+                />
+              )}
+            </div>
+
+            {/* Column 3 (desktop only) */}
+            {isDesktopView && (
+              <div className="flex w-full max-w-xl flex-col gap-6">
+                {isDonutLoading ? (
+                  <DonutChartSkeleton />
+                ) : (
+                  <DonutChart
+                    data={
+                      userData ? (userDonut ? userDonut : null) : dummyChart
+                    }
+                  />
+                )}
+                <ForceGraph
+                  theme={resolvedTheme}
+                  nodes={
+                    userData
+                      ? forceGraphData.nodes.length > 0
+                        ? forceGraphData.nodes
+                        : null
+                      : dummyGraph.nodes
+                  }
+                  links={
+                    userData
+                      ? forceGraphData.links.length > 0
+                        ? forceGraphData.links
+                        : null
+                      : dummyGraph.links
+                  }
+                />
+              </div>
+            )}
+          </div>
+          <Footer theme={theme} userData={userData} />
         </div>
-        <Footer theme={theme} userData={userData} />
       </div>
     </div>
   );

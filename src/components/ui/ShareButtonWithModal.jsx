@@ -63,7 +63,7 @@ export default function ShareButtonWithModal({ userData }) {
                   type="text"
                   readOnly
                   value={url}
-                  className="w-full rounded-lg border border-neutral-300 bg-neutral-50 p-2 text-sm text-neutral-700 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300"
+                  className="w-full rounded-lg border border-neutral-300 bg-neutral-50 p-2 pr-10 text-sm text-neutral-700 dark:border-neutral-600 dark:bg-neutral-700 dark:text-neutral-300"
                 />
                 <button
                   onClick={handleCopy}

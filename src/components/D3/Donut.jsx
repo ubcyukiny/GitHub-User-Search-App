@@ -74,7 +74,7 @@ const DonutChart = ({ data }) => {
     return (
       <div className="relative flex min-h-[522px] flex-col gap-4">
         <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">
-          Language Usage (Recent 20 Repos)
+          Language Usage (Recent 15 Repos)
         </h2>
         <div className="text-center text-sm text-neutral-500 dark:text-neutral-300">
           This user has no language data to display.
@@ -86,7 +86,7 @@ const DonutChart = ({ data }) => {
   return (
     <div className="relative flex flex-col">
       <h2 className="mb-2 text-lg font-semibold text-neutral-800 dark:text-white">
-        Language Usage (Recent 20 Repos)
+        Language Usage (Recent 15 Repos)
       </h2>
       <div className="flex justify-center">
         <svg ref={ref} className="h-auto w-full max-w-96" />
