@@ -15,7 +15,7 @@ export const getUser = async (username) => {
 export const getRepos = async (username) => {
   return await octokit.request("GET /users/{username}/repos", {
     username,
-    per_page: 50,
+    per_page: 15,
   });
 };
 
@@ -36,21 +36,14 @@ export const getRepoLanguages = async (username, repoName) => {
   });
 };
 
-export const buildForceGraphData = async (username) => {
-  const response = await getRepos(username);
-
-  const repos = response?.data ?? [];
-  console.log(`[ForceGraph] Total repos fetched: ${repos.length}`);
+export const buildForceGraphData = async (repos, username) => {
+  if (!repos || repos.length === 0) return { nodes: [], links: [] };
 
   const nodes = [];
   const links = [];
   const langSet = new Set();
 
-  const topRepos = repos.slice(0, 20);
-  console.log(
-    `[ForceGraph] Top non-forked repos:`,
-    topRepos.map((r) => r.name),
-  );
+  const topRepos = repos.slice(0, 15);
 
   for (const repo of topRepos) {
     const repoId = `repo:${repo.name}`;
@@ -61,28 +54,32 @@ export const buildForceGraphData = async (username) => {
       url: repo.html_url,
     });
 
-    const { data: langObj } = await getRepoLanguages(username, repo.name);
-    console.log(`[ForceGraph] Languages for ${repo.name}:`, langObj);
+    try {
+      const { data: langObj } = await getRepoLanguages(username, repo.name);
+      for (const lang in langObj) {
+        const langId = `lang:${lang}`;
+        if (!langSet.has(lang)) {
+          nodes.push({
+            id: langId,
+            type: "lang",
+            name: lang,
+          });
+          langSet.add(lang);
+        }
 
-    for (const lang in langObj) {
-      const langId = `lang:${lang}`;
-      if (!langSet.has(lang)) {
-        nodes.push({
-          id: langId,
-          type: "lang",
-          name: lang,
+        links.push({
+          source: repoId,
+          target: langId,
         });
-        langSet.add(lang);
       }
-
-      links.push({
-        source: repoId,
-        target: langId,
-      });
+    } catch (err) {
+      console.error(
+        `[ForceGraph] Failed to fetch languages for ${repo.name}`,
+        err,
+      );
     }
   }
-  console.log(`[ForceGraph] Final nodes:`, nodes);
-  console.log(`[ForceGraph] Final links:`, links);
+
   return { nodes, links };
 };
 

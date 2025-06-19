@@ -172,14 +172,11 @@ function App() {
 
     // Events
     try {
-      console.log("📆 from:", fromDate.toISOString());
-      console.log("📆 to:", today.toISOString());
       const contributionCalendar = await getUserEvents(
         input,
         fromDate.toISOString(),
         today.toISOString(),
       );
-      console.log("contributionCalender", contributionCalendar);
       setEvents(contributionCalendar);
       toast.loading("Events loaded. Generating chart...", { id: toastId });
     } catch (err) {
@@ -189,52 +186,65 @@ function App() {
     }
     setIsEventsLoading(false);
 
-    // Donut Chart (Languages)
+    // Shared repo fetch (donut and force graph)
     let topRepos = [];
     try {
       const repoRes = await getRepos(input);
-      topRepos = repoRes.data;
+      console.log("repoRes", repoRes);
+      topRepos = repoRes.data.slice(0, 15);
+      console.log("topRepos: ", topRepos);
     } catch (err) {
       toast.error(err, { id: toastId });
-
-      topRepos = [];
       handleApiError(err, "Fetching user repos failed", toastId);
+      setUserDonut([]);
+      setForceGraphData({ nodes: [], links: [] });
+      setisDonutLoading(false);
+      return;
     }
 
-    const languageTotals = {};
-    for (const repo of topRepos) {
-      try {
-        const res = await getRepoLanguages(repo.owner.login, repo.name);
-        for (const [lang, bytes] of Object.entries(res.data)) {
-          languageTotals[lang] = (languageTotals[lang] || 0) + bytes;
-        }
-      } catch (err) {
-        handleApiError(
-          err,
-          `Fetching languages for ${repo.name} failed`,
-          toastId,
-        );
-      }
-    }
-    const chartData = Object.entries(languageTotals).map(
-      ([language, bytes]) => ({
-        language,
-        bytes,
-      }),
-    );
-    setUserDonut(chartData);
-    setisDonutLoading(false);
-    toast.loading("Chart ready. Finalizing graph...", { id: toastId });
-
-    // Force Graph
+    // Build both donut + force graph in parallel
     try {
-      const graphData = await buildForceGraphData(input);
+      const [donutData, graphData] = await Promise.all([
+        // Donut: aggregate language totals
+        (async () => {
+          const langTotals = {};
+          await Promise.all(
+            topRepos.map(async (repo) => {
+              try {
+                const res = await getRepoLanguages(repo.owner.login, repo.name);
+                for (const [lang, bytes] of Object.entries(res.data)) {
+                  langTotals[lang] = (langTotals[lang] || 0) + bytes;
+                }
+              } catch (err) {
+                handleApiError(
+                  err,
+                  `Language fetch failed: ${repo.name}`,
+                  toastId,
+                );
+              }
+            }),
+          );
+          return Object.entries(langTotals).map(([language, bytes]) => ({
+            language,
+            bytes,
+          }));
+        })(),
+
+        buildForceGraphData(topRepos, input),
+      ]);
+
+      setUserDonut(donutData);
+      setisDonutLoading(false);
+      toast.loading("Chart ready. Finalizing graph...", { id: toastId });
+
       setForceGraphData(graphData);
       toast.success("All data loaded successfully!", { id: toastId });
     } catch (err) {
+      setUserDonut([]);
       setForceGraphData({ nodes: [], links: [] });
-      handleApiError(err, "Building force graph failed", toastId);
+      setisDonutLoading(false);
       toast.success("Data loaded (no graph)", { id: toastId });
+      handleApiError(err, "Generating chart/graph failed", toastId);
     }
   };
 
