@@ -3,7 +3,7 @@ import { getLanguageColor } from "../../utils/colorUtils";
 function PinnedRepos({ repos }) {
   if (!repos || repos.length === 0)
     return (
-      <div className="flex min-h-[520px] flex-col gap-4">
+      <div className="flex flex-col gap-4 sm:min-h-[520px]">
         <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">
           Pinned Repositories
         </h2>

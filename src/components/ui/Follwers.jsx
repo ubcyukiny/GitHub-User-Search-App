@@ -4,7 +4,7 @@ import { dummyFollowers } from "../../data/dummyData";
 function Followers({ followers }) {
   if (!followers) {
     return (
-      <div className="flex min-h-[522px] flex-col gap-4">
+      <div className="flex flex-col gap-4">
         <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">
           Followers
         </h2>

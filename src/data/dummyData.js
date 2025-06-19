@@ -6,7 +6,7 @@ export const dummyUser = {
   created_at: "2011-01-25T00:00:00Z",
   avatar_url: "/assets/icon-user.png",
   html_url: "https://github.com/octocat",
-  bio: "This profile has no bio",
+  bio: "Start by searching for any GitHub username to explore their profile, activity, and more.",
   public_repos: 8,
   followers: 3938,
   following: 9,

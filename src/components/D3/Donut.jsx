@@ -72,7 +72,7 @@ const DonutChart = ({ data }) => {
 
   if (!data || data.length == 0) {
     return (
-      <div className="relative flex min-h-[522px] flex-col gap-4">
+      <div className="relative flex h-full flex-col gap-4">
         <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">
           Language Usage (Recent 15 Repos)
         </h2>
@@ -84,11 +84,11 @@ const DonutChart = ({ data }) => {
   }
 
   return (
-    <div className="relative flex flex-col">
+    <div className="relative flex h-full grow flex-col">
       <h2 className="mb-2 text-lg font-semibold text-neutral-800 dark:text-white">
         Language Usage (Recent 15 Repos)
       </h2>
-      <div className="flex justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <svg ref={ref} className="h-auto w-full max-w-96" />
       </div>
       <div className="mt-4 flex flex-wrap justify-center gap-4">

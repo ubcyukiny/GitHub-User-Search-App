@@ -293,142 +293,83 @@ function App() {
             inputValue={inputValue}
             setInputValue={setInputValue}
           />
-          <div className="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 sm:justify-items-stretch xl:grid-cols-3">
-            {/* Column 1 */}
-            <div className="flex w-full max-w-xl flex-col gap-6">
-              {isUserLoading ? (
-                <UserCardSkeleton />
-              ) : (
-                <UserCard userData={userData || dummyUser} />
-              )}
-              {isEventsLoading ? (
-                <HeatmapSkeleton />
-              ) : (
-                <ThreeMonthHeatmap
-                  theme={resolvedTheme}
-                  events={userData ? (events ? events : null) : dummyEvents}
-                />
-              )}
-              {isTabletView &&
-                (isDonutLoading ? (
-                  <DonutChartSkeleton />
-                ) : (
-                  <DonutChart
-                    data={
-                      userData ? (userDonut ? userDonut : null) : dummyChart
-                    }
-                  />
-                ))}
-            </div>
 
-            {/* Column 2 */}
-            <div className="flex w-full max-w-xl flex-col gap-6">
-              {isFollowersLoading ? (
-                <FollowersSkeleton />
-              ) : (
-                <Followers
-                  followers={
-                    userData
-                      ? followers?.length > 0
-                        ? followers
-                        : null
-                      : dummyFollowers
-                  }
-                />
-              )}
-              {isPinnedLoading ? (
-                <PinnedReposSkeleton />
-              ) : (
-                <PinnedRepos
-                  repos={
-                    userData ? (pinned.length > 0 ? pinned : null) : dummyPinned
-                  }
-                />
-              )}
-              {!isTabletView &&
-                !isDesktopView &&
-                (isDonutLoading ? (
-                  <DonutChartSkeleton />
-                ) : (
-                  <DonutChart
-                    data={
-                      userData ? (userDonut ? userDonut : null) : dummyChart
-                    }
-                  />
-                ))}
-              {!isTabletView && !isDesktopView && (
-                <ForceGraph
-                  theme={resolvedTheme}
-                  nodes={
-                    userData
-                      ? forceGraphData.nodes.length > 0
-                        ? forceGraphData.nodes
-                        : null
-                      : dummyGraph.nodes
-                  }
-                  links={
-                    userData
-                      ? forceGraphData.links.length > 0
-                        ? forceGraphData.links
-                        : null
-                      : dummyGraph.links
-                  }
-                />
-              )}
-              {/* Mobile */}
-              {isTabletView && (
-                <ForceGraph
-                  theme={resolvedTheme}
-                  nodes={
-                    userData
-                      ? forceGraphData.nodes.length > 0
-                        ? forceGraphData.nodes
-                        : null
-                      : dummyGraph.nodes
-                  }
-                  links={
-                    userData
-                      ? forceGraphData.links.length > 0
-                        ? forceGraphData.links
-                        : null
-                      : dummyGraph.links
-                  }
-                />
-              )}
-            </div>
-
-            {/* Column 3 (desktop only) */}
-            {isDesktopView && (
-              <div className="flex w-full max-w-xl flex-col gap-6">
-                {isDonutLoading ? (
-                  <DonutChartSkeleton />
-                ) : (
-                  <DonutChart
-                    data={
-                      userData ? (userDonut ? userDonut : null) : dummyChart
-                    }
-                  />
-                )}
-                <ForceGraph
-                  theme={resolvedTheme}
-                  nodes={
-                    userData
-                      ? forceGraphData.nodes.length > 0
-                        ? forceGraphData.nodes
-                        : null
-                      : dummyGraph.nodes
-                  }
-                  links={
-                    userData
-                      ? forceGraphData.links.length > 0
-                        ? forceGraphData.links
-                        : null
-                      : dummyGraph.links
-                  }
-                />
-              </div>
+          <div className="grid grid-cols-1 items-start gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {/* UserCard */}
+            {isUserLoading ? (
+              <UserCardSkeleton />
+            ) : (
+              <UserCard userData={userData || dummyUser} />
             )}
+
+            {/* Followers */}
+            {isFollowersLoading ? (
+              <FollowersSkeleton />
+            ) : (
+              <Followers
+                followers={
+                  userData
+                    ? followers?.length > 0
+                      ? followers
+                      : null
+                    : dummyFollowers
+                }
+              />
+            )}
+
+            {/* DonutChart (shared fallback logic) */}
+            {(isDesktopView ||
+              isTabletView ||
+              (!isTabletView && !isDesktopView)) &&
+              (isDonutLoading ? (
+                <DonutChartSkeleton />
+              ) : (
+                <DonutChart
+                  data={userData ? (userDonut ? userDonut : null) : dummyChart}
+                />
+              ))}
+
+            {/* Heatmap */}
+            {isEventsLoading ? (
+              <HeatmapSkeleton />
+            ) : (
+              <ThreeMonthHeatmap
+                theme={resolvedTheme}
+                events={userData ? (events ? events : null) : dummyEvents}
+              />
+            )}
+
+            {/* PinnedRepos */}
+            {isPinnedLoading ? (
+              <PinnedReposSkeleton />
+            ) : (
+              <PinnedRepos
+                repos={
+                  userData ? (pinned.length > 0 ? pinned : null) : dummyPinned
+                }
+              />
+            )}
+
+            {/* ForceGraph */}
+            <ForceGraph
+              theme={resolvedTheme}
+              nodes={
+                userData
+                  ? forceGraphData.nodes.length > 0
+                    ? forceGraphData.nodes
+                    : null
+                  : dummyGraph.nodes
+              }
+              links={
+                userData
+                  ? forceGraphData.links.length > 0
+                    ? forceGraphData.links
+                    : null
+                  : dummyGraph.links
+              }
+            />
           </div>
+
           <Footer theme={theme} userData={userData} />
         </div>
       </div>

@@ -2,12 +2,12 @@ import { CompanyIcon, LocationIcon, TwitterIcon, WebsiteIcon } from "../icons";
 
 function UserCard({ userData }) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex h-full flex-col gap-4">
       <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">
         User Overview
       </h2>
-      <div className="w-full rounded-2xl bg-neutral-50 px-4 py-6 shadow-xl md:px-6 md:py-6 dark:bg-neutral-800">
-        <div className="flex flex-col items-center gap-6 text-center">
+      <div className="flex h-full w-full flex-col content-stretch items-center justify-center rounded-2xl bg-neutral-50 px-4 py-6 shadow-xl md:px-6 md:py-6 dark:bg-neutral-800">
+        <div className="flex grow flex-col items-center justify-center gap-6 text-center">
           {/* Avatar */}
           <img
             className="size-[70px] rounded-full md:hidden"
