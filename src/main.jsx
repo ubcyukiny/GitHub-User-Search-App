@@ -5,7 +5,7 @@ import { BrowserRouter } from "react-router-dom";
 import AppRouter from "./AppRouter";
 import ThemedToaster from "./components/ui/ThemedToaster";
 import { ThemeProvider } from "./context/ThemeContext";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
