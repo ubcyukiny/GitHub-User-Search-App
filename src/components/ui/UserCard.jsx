@@ -97,14 +97,20 @@ function UserCard({ userData }) {
             </div>
             <div className="flex min-w-0 items-center gap-3">
               <WebsiteIcon className="flex-shrink-0 text-neutral-900 dark:text-white" />
-              <a
-                href={userData.blog}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="textPreset6 truncate text-neutral-500 hover:underline dark:text-white"
-              >
-                {userData.blog || "Not Available"}
-              </a>
+              {userData.blog ? (
+                <a
+                  href={userData.blog}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="textPreset6 truncate text-neutral-500 hover:underline dark:text-white"
+                >
+                  {userData.blog}
+                </a>
+              ) : (
+                <p className="textPreset6 truncate text-neutral-500 dark:text-white">
+                  Not Available
+                </p>
+              )}
             </div>
             <div className="flex min-w-0 items-center gap-3">
               <CompanyIcon className="flex-shrink-0 text-neutral-900 dark:text-white" />

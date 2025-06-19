@@ -1,6 +1,6 @@
 function FollowerCard({ follower }) {
   return (
-    <div className="hover:bg-neutral-20 flex flex-col items-center rounded-lg bg-white p-4 shadow-sm transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-[1.015] hover:shadow-md dark:bg-neutral-800 dark:hover:bg-neutral-700">
+    <div className="hover:bg-neutral-20 flex flex-col items-center rounded-lg bg-white p-4 shadow-sm transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-[1.015] hover:bg-neutral-200 hover:shadow-md dark:bg-neutral-800 dark:hover:bg-neutral-700">
       <div className="flex flex-grow flex-col items-center">
         <img
           src={follower.avatar_url}

@@ -5,15 +5,15 @@ function ThreeMonthHeatmap({ events, theme }) {
   const ref = useRef();
 
   useEffect(() => {
-    if (!events) return;
     const margin = { top: 30, right: 20, bottom: 40, left: 36 };
     const cellSize = 16;
     const today = new Date();
     const startDate = d3.timeSunday.floor(d3.timeMonth.offset(today, -3));
     const endDate = d3.timeSunday.ceil(today);
     const allDays = d3.timeDays(startDate, endDate);
-    const weeks = d3.groups(allDays, (d) => d3.timeWeek.count(startDate, d));
-    const numWeeks = weeks.length;
+    const weekMap = d3.group(allDays, (d) => d3.timeWeek.count(startDate, d));
+    const weekEntries = Array.from(weekMap.entries());
+    const numWeeks = weekEntries.length;
 
     const width = numWeeks * cellSize + margin.left + margin.right;
     const height = 7 * cellSize + margin.top + margin.bottom;
@@ -29,11 +29,11 @@ function ThreeMonthHeatmap({ events, theme }) {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
+    const toDateKey = (d) => d.toISOString().slice(0, 10);
     const parseDate = d3.timeFormat("%Y-%m-%d");
-    const toDateKey = (d) => d.toISOString().slice(0, 10); // always in UTC
 
     const counts = d3.rollup(
-      events,
+      events || [],
       (v) => v.length,
       (d) => toDateKey(new Date(d.created_at)),
     );
@@ -47,7 +47,7 @@ function ThreeMonthHeatmap({ events, theme }) {
           : ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"],
       );
 
-    // Y-labels
+    // Weekday labels
     const yLabels = ["", "Mon", "", "Wed", "", "Fri", ""];
     g.selectAll("text.day")
       .data(yLabels)
@@ -59,9 +59,9 @@ function ThreeMonthHeatmap({ events, theme }) {
       .text((d) => d);
 
     // Month labels
-    weeks.forEach(([_, days], i) => {
+    weekEntries.forEach(([_, days], i) => {
       const first = days[0];
-      if (first.getDate() <= 7) {
+      if (first && first.getDate() <= 7) {
         g.append("text")
           .attr("x", i * cellSize)
           .attr("y", -8)
@@ -76,15 +76,15 @@ function ThreeMonthHeatmap({ events, theme }) {
       .append("div")
       .attr(
         "class",
-        "tooltip text-sm px-2 py-1 bg-white dark:bg-neutral-800 text-black dark:text-white border border-neutral-200 dark:border-neutral-700 rounded shadow ",
+        "tooltip text-sm px-2 py-1 bg-white dark:bg-neutral-800 text-black dark:text-white border border-neutral-200 dark:border-neutral-700 rounded shadow",
       )
       .style("position", "absolute")
       .style("opacity", 0)
       .style("pointer-events", "none");
 
-    // Squares
+    // Rect grid
     g.selectAll("g.week")
-      .data(weeks)
+      .data(weekEntries)
       .join("g")
       .attr("transform", ([, days], i) => `translate(${i * cellSize},0)`)
       .selectAll("rect")
@@ -95,11 +95,7 @@ function ThreeMonthHeatmap({ events, theme }) {
       .attr("y", (d) => d.getDay() * cellSize)
       .attr("rx", 2)
       .attr("ry", 2)
-      .attr("fill", (d) => {
-        const key = toDateKey(d);
-        const val = counts.get(key);
-        return colorScale(counts.get(key) || 0);
-      })
+      .attr("fill", (d) => colorScale(counts.get(toDateKey(d)) || 0))
       .on("mouseover", function (event, d) {
         const key = parseDate(d);
         tooltip
@@ -110,7 +106,7 @@ function ThreeMonthHeatmap({ events, theme }) {
       })
       .on("mouseout", () => tooltip.style("opacity", 0));
 
-    // Add legend
+    // Legend
     const legendColors = colorScale.range();
     const legend = svg
       .append("g")
@@ -146,19 +142,6 @@ function ThreeMonthHeatmap({ events, theme }) {
       .text("More");
   }, [events, theme]);
 
-  if (!events) {
-    return (
-      <div className="flex min-h-[274px] flex-col gap-4">
-        <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">
-          GitHub Contribution Activity
-        </h2>
-        <div className="text-center text-sm text-neutral-500 dark:text-neutral-300">
-          This user has no activity to display.
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">
@@ -168,6 +151,11 @@ function ThreeMonthHeatmap({ events, theme }) {
         ref={ref}
         className="flex w-full justify-center overflow-x-auto rounded-2xl bg-neutral-50 px-4 py-6 shadow-xl md:px-6 md:py-6 dark:bg-neutral-800"
       />
+      {(!events || events.length === 0) && (
+        <p className="text-center text-sm text-neutral-500 dark:text-neutral-300">
+          This user has no recent contribution activity.
+        </p>
+      )}
     </div>
   );
 }

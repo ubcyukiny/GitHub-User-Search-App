@@ -1,7 +1,7 @@
 # devfinder
 
 A modern GitHub profile visualizer built with **React**, **Vite**, **Tailwind CSS**, and **D3.js**.  
-Search any GitHub user and explore their public profile, repositories, language usage, and network graph — all beautifully visualized.
+Search for any GitHub user and explore their public data through clean, interactive visualizations: language usage, pinned repositories, contribution heatmap, and follower insights.
 
 ---
 
@@ -23,6 +23,9 @@ Search any GitHub user and explore their public profile, repositories, language 
 - **D3.js** for visualizations
 - **GitHub REST API** for user + repo data
 - Responsive layout via Tailwind’s utility-first system
+- React Router DOM
+- React Hot Toast for notification
+- Vitest
 
 ---
 
@@ -35,15 +38,28 @@ npm install
 npm run dev
 ```
 
+testing
+
+```bash
+npx vitest --ui
+```
+
 ## 🖼 Visuals
-![screenshot](https://github.com/user-attachments/assets/471d4a34-d5d0-40e2-bf1b-b5e5588d3d7a)
+
+Light Mode
+![App Screenshot](./public/screenshotLight.png)
+Dark Mode
+![App Screenshot2](./public/screenshotDark.png)
 
 ## 🧾 Credits
 
 Force-directed graph adapted from Mike Bostock’s Observable notebook.  
 Original copyright © 2021 Observable, Inc. Licensed under the MIT License.
 
-Partially inspired by [Maeve Kane’s fork of the Quaker network graph](https://observablehq.com/@mkane2/force-directed-graph-with-tooltip), which added dynamic tooltips and aesthetic improvements.  
+Partially inspired by [Maeve Kane’s fork of the Quaker network graph](https://observablehq.com/@mkane2/force-directed-graph-with-tooltip), which added dynamic tooltips and aesthetic improvements.
+
+Contribution heatmap styled to resemble GitHub’s own
+
 Original data and graph concept from the [Programming Historian Python network lesson](https://programminghistorian.org/en/lessons/creating-network-diagrams-from-historical-sources).
 
 Logo and favicon generated using LogoMakr (used under free license with credit).
@@ -53,7 +69,7 @@ Logo and favicon generated using LogoMakr (used under free license with credit).
 
 Initial UI design inspiration from [Frontend Mentor](https://www.frontendmentor.io/challenges/github-user-search-app-Q09YOgaH6).
 
-🧠 Special thanks to AI tools (ChatGPT) for helping me debug D3 and polish UX.
+🧠 Special thanks to ChatGPT for helping me debug D3 and polish UX.
 
 ## 📝 License
 
