@@ -86,13 +86,6 @@ export const buildForceGraphData = async (username) => {
   return { nodes, links };
 };
 
-export const getUserEvents = async (username) => {
-  return await octokit.request("GET /users/{username}/events/public", {
-    username,
-    per_page: 100,
-  });
-};
-
 const PINNED_REPOS_QUERY = `query($username: String!) {
   user(login: $username) {
     pinnedItems(first: 6, types: REPOSITORY) {
@@ -113,6 +106,23 @@ const PINNED_REPOS_QUERY = `query($username: String!) {
   }
 }`;
 
+const EVENTS_QUERY = `
+  query ($username: String!, $from: DateTime!, $to: DateTime!) {
+    user(login: $username) {
+      contributionsCollection(from: $from, to: $to) {
+        contributionCalendar {
+          weeks {
+            contributionDays {
+              date
+              contributionCount
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 const graphqlWithAuth = graphql.defaults({
   headers: {
     authorization: `token ${import.meta.env.VITE_GITHUB_TOKEN}`,
@@ -122,4 +132,14 @@ const graphqlWithAuth = graphql.defaults({
 export const getPinnedRepos = async (username) => {
   const res = await graphqlWithAuth(PINNED_REPOS_QUERY, { username });
   return res.user.pinnedItems.nodes;
+};
+
+export const getUserEvents = async (username, from, to) => {
+  const variables = {
+    username,
+    from,
+    to,
+  };
+  const res = await graphqlWithAuth(EVENTS_QUERY, variables);
+  return res.user.contributionsCollection.contributionCalendar;
 };

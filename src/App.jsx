@@ -58,6 +58,11 @@ function App() {
   const { username } = useParams();
   const navigate = useNavigate();
 
+  // set Dates for heatmap
+  const today = new Date();
+  const fromDate = new Date(today);
+  fromDate.setMonth(today.getMonth() - 3);
+
   const handleRouteSearch = (input) => {
     if (error) return; // Don't navigate if there's a known error
     if (!input || input === username) return;
@@ -105,6 +110,8 @@ function App() {
       setError(false);
       toast.loading("User found. Loading pinned repos...", { id: toastId });
     } catch (err) {
+      toast.error(err, { id: toastId });
+
       setUserData(null);
       setError("Username not found. Please try again.");
       handleApiError(err, "Fetching user failed", toastId);
@@ -126,6 +133,8 @@ function App() {
       });
     } catch (err) {
       setPinned([]);
+      toast.error(err, { id: toastId });
+
       handleApiError(err, "Fetching pinned repos failed", toastId);
     }
     setIsPinnedLoading(false);
@@ -137,6 +146,8 @@ function App() {
       baseFollowers = res.data.slice(0, 4);
     } catch (err) {
       setFollowers([]);
+      toast.error(err, { id: toastId });
+
       handleApiError(err, "Fetching followers failed", toastId);
     }
 
@@ -153,17 +164,27 @@ function App() {
       }
     } catch (err) {
       setFollowers([]);
+      toast.error(err, { id: toastId });
+
       handleApiError(err, "Enriching follower details failed", toastId);
     }
     setIsFollowersLoading(false);
 
     // Events
     try {
-      const eventsRes = await getUserEvents(input);
-      setEvents(eventsRes.data);
+      console.log("📆 from:", fromDate.toISOString());
+      console.log("📆 to:", today.toISOString());
+      const contributionCalendar = await getUserEvents(
+        input,
+        fromDate.toISOString(),
+        today.toISOString(),
+      );
+      console.log("contributionCalender", contributionCalendar);
+      setEvents(contributionCalendar);
       toast.loading("Events loaded. Generating chart...", { id: toastId });
     } catch (err) {
       setEvents([]);
+      toast.error(err, { id: toastId });
       handleApiError(err, "Fetching events failed", toastId);
     }
     setIsEventsLoading(false);
@@ -174,6 +195,8 @@ function App() {
       const repoRes = await getRepos(input);
       topRepos = repoRes.data.slice(0, 20);
     } catch (err) {
+      toast.error(err, { id: toastId });
+
       topRepos = [];
       handleApiError(err, "Fetching user repos failed", toastId);
     }
@@ -272,9 +295,7 @@ function App() {
             ) : (
               <ThreeMonthHeatmap
                 theme={resolvedTheme}
-                events={
-                  userData ? (events.length > 0 ? events : null) : dummyEvents
-                }
+                events={userData ? (events ? events : null) : dummyEvents}
               />
             )}
             {isTabletView &&

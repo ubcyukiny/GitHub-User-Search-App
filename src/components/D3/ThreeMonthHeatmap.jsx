@@ -3,6 +3,7 @@ import * as d3 from "d3";
 
 function ThreeMonthHeatmap({ events, theme }) {
   const ref = useRef();
+  console.log(events);
 
   useEffect(() => {
     const margin = { top: 30, right: 20, bottom: 40, left: 36 };
@@ -29,14 +30,15 @@ function ThreeMonthHeatmap({ events, theme }) {
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    const toDateKey = (d) => d.toISOString().slice(0, 10);
-    const parseDate = d3.timeFormat("%Y-%m-%d");
-
-    const counts = d3.rollup(
-      events || [],
-      (v) => v.length,
-      (d) => toDateKey(new Date(d.created_at)),
-    );
+    // Convert GraphQL date strings to a Map with ISO date keys
+    const counts = new Map();
+    if (events?.weeks) {
+      events.weeks
+        .flatMap((w) => w.contributionDays)
+        .forEach((d) => {
+          counts.set(d.date, d.contributionCount);
+        });
+    }
 
     const colorScale = d3
       .scaleThreshold()
@@ -46,6 +48,8 @@ function ThreeMonthHeatmap({ events, theme }) {
           ? ["#3a3a3a", "#3f6846", "#4caf50", "#43d17a", "#a1f4c4"]
           : ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"],
       );
+
+    const parseDate = d3.timeFormat("%Y-%m-%d");
 
     // Weekday labels
     const yLabels = ["", "Mon", "", "Wed", "", "Fri", ""];
@@ -82,7 +86,7 @@ function ThreeMonthHeatmap({ events, theme }) {
       .style("opacity", 0)
       .style("pointer-events", "none");
 
-    // Rect grid
+    // Grid rectangles
     g.selectAll("g.week")
       .data(weekEntries)
       .join("g")
@@ -95,7 +99,7 @@ function ThreeMonthHeatmap({ events, theme }) {
       .attr("y", (d) => d.getDay() * cellSize)
       .attr("rx", 2)
       .attr("ry", 2)
-      .attr("fill", (d) => colorScale(counts.get(toDateKey(d)) || 0))
+      .attr("fill", (d) => colorScale(counts.get(parseDate(d)) || 0))
       .on("mouseover", function (event, d) {
         const key = parseDate(d);
         tooltip
@@ -142,6 +146,11 @@ function ThreeMonthHeatmap({ events, theme }) {
       .text("More");
   }, [events, theme]);
 
+  const totalContributions =
+    events?.weeks
+      ?.flatMap((w) => w.contributionDays)
+      ?.reduce((sum, d) => sum + d.contributionCount, 0) || 0;
+
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-lg font-semibold text-neutral-800 dark:text-white">
@@ -151,7 +160,7 @@ function ThreeMonthHeatmap({ events, theme }) {
         ref={ref}
         className="flex w-full justify-center overflow-x-auto rounded-2xl bg-neutral-50 px-4 py-6 shadow-xl md:px-6 md:py-6 dark:bg-neutral-800"
       />
-      {(!events || events.length === 0) && (
+      {totalContributions === 0 && (
         <p className="text-center text-sm text-neutral-500 dark:text-neutral-300">
           This user has no recent contribution activity.
         </p>
