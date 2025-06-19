@@ -1,17 +1,19 @@
+import { generateDummyEvents } from "../utils/generateDummyEvents";
+
 export const dummyUser = {
-  name: "Jane Dev",
-  login: "janeDev",
-  created_at: "2019-03-22T00:00:00Z",
+  name: "The Octocat",
+  login: "octocat",
+  created_at: "2011-01-25T00:00:00Z",
   avatar_url: "/assets/icon-user.png",
-  html_url: "https://github.com/janeDev",
-  bio: "Start by searching for any GitHub username to explore their profile, activity, and more.",
-  public_repos: 23,
-  followers: 128,
-  following: 45,
-  blog: "",
-  location: "Vancouver, BC",
-  twitter_username: "",
-  company: "",
+  html_url: "https://github.com/octocat",
+  bio: "This profile has no bio",
+  public_repos: 8,
+  followers: 3938,
+  following: 9,
+  blog: "https://github.blog",
+  location: "San Francisco",
+  twitter_username: null,
+  company: "github",
 };
 
 export const dummyChart = [
@@ -113,41 +115,7 @@ export const dummyTopRepos = [
   },
 ];
 
-export const dummyEvents = [
-  { created_at: "2025-04-20T12:00:00Z" },
-  { created_at: "2025-04-21T08:45:00Z" },
-  { created_at: "2025-04-22T15:20:00Z" },
-  { created_at: "2025-05-02T18:30:00Z" },
-  { created_at: "2025-05-12T11:00:00Z" },
-  { created_at: "2025-05-14T17:10:00Z" },
-  { created_at: "2025-05-20T09:15:00Z" },
-  { created_at: "2025-05-21T14:30:00Z" },
-  { created_at: "2025-05-22T10:45:00Z" },
-  { created_at: "2025-05-23T16:00:00Z" },
-  { created_at: "2025-05-23T18:00:00Z" },
-  { created_at: "2025-05-24T12:20:00Z" },
-  { created_at: "2025-05-25T11:00:00Z" },
-  { created_at: "2025-05-25T13:45:00Z" },
-  { created_at: "2025-05-26T15:10:00Z" },
-  { created_at: "2025-05-27T09:30:00Z" },
-  { created_at: "2025-05-28T14:50:00Z" },
-  { created_at: "2025-05-29T08:40:00Z" },
-  { created_at: "2025-05-30T13:00:00Z" },
-  { created_at: "2025-05-31T17:15:00Z" },
-  { created_at: "2025-06-01T10:00:00Z" },
-  { created_at: "2025-06-01T14:00:00Z" },
-  { created_at: "2025-06-02T09:45:00Z" },
-  { created_at: "2025-06-02T16:20:00Z" },
-  { created_at: "2025-06-03T13:15:00Z" },
-  { created_at: "2025-06-04T11:40:00Z" },
-  { created_at: "2025-06-05T18:30:00Z" },
-  { created_at: "2025-06-06T08:00:00Z" },
-  { created_at: "2025-06-07T09:10:00Z" },
-  { created_at: "2025-06-08T12:25:00Z" },
-  { created_at: "2025-06-08T17:00:00Z" },
-  { created_at: "2025-06-09T15:50:00Z" },
-  { created_at: "2025-06-10T10:10:00Z" },
-];
+export const dummyEvents = generateDummyEvents();
 
 export const dummyPinned = [
   {
