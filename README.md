@@ -1,5 +1,7 @@
 # devfinder
 
+🔗 [Live Demo](https://github-user-search-app-liart-ten.vercel.app/)
+
 A modern GitHub profile visualizer built with **React**, **Vite**, **Tailwind CSS**, and **D3.js**.  
 Search for any GitHub user and explore their public data through clean, interactive visualizations: language usage, pinned repositories, contribution heatmap, and follower insights.
 

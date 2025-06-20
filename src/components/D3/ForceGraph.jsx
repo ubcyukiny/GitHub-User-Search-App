@@ -116,23 +116,25 @@ function ForceGraph({ nodes, links, theme }) {
             }),
         )
         .on("mouseover", (event, d) => {
-          const [x, y] = d3.pointer(event, ref.current);
-          d3.select("#tooltip")
-            .style("left", `${Math.min(x + 25, dimensions.width - 100)}px`)
-            .style("top", `${Math.max(y + 505, 0)}px`)
-            .style("opacity", 1)
-            .style("display", "block")
-            .html(
-              d.type === "repo"
-                ? `<strong>Repo:</strong> ${d.name}<br/>`
-                : `<strong>Language:</strong> ${d.name}`,
-            );
+          if (window.innerWidth >= 1280) {
+            const [x, y] = d3.pointer(event, ref.current);
+            d3.select("#tooltip")
+              .style("left", `${Math.min(x + 25, dimensions.width - 100)}px`)
+              .style("top", `${Math.max(y + 585, 0)}px`)
+              .style("opacity", 1)
+              .style("display", "block")
+              .html(
+                d.type === "repo"
+                  ? `<strong>Repo:</strong> ${d.name}<br/>`
+                  : `<strong>Language:</strong> ${d.name}`,
+              );
+          }
         })
         .on("mousemove", (event) => {
           const [x, y] = d3.pointer(event, ref.current);
           d3.select("#tooltip")
             .style("left", `${Math.min(x + 25, dimensions.width - 100)}px`)
-            .style("top", `${Math.max(y + 505, 0)}px`);
+            .style("top", `${Math.max(y + 585, 0)}px`);
         })
         .on("mouseout", () => {
           d3.select("#tooltip").style("opacity", 0).style("display", "none");
@@ -197,7 +199,7 @@ function ForceGraph({ nodes, links, theme }) {
       </p>
       <div
         id="tooltip"
-        className="pointer-events-none absolute z-50 rounded border border-neutral-200 bg-white px-2 py-1 text-sm text-black shadow transition-opacity duration-200 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
+        className="pointer-events-none absolute z-50 hidden rounded border border-neutral-200 bg-white px-2 py-1 text-sm text-black shadow transition-opacity duration-200 xl:block dark:border-neutral-700 dark:bg-neutral-800 dark:text-white"
         style={{ opacity: 0 }}
       ></div>
     </div>
