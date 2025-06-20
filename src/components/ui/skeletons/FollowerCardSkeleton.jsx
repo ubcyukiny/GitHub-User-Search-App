@@ -1,19 +1,19 @@
 function FollowerCardSkeleton() {
   return (
-    <div className="flex animate-pulse flex-col items-center rounded-lg bg-white p-4 shadow-sm transition dark:bg-neutral-800">
-      <div className="flex flex-grow flex-col items-center">
+    <div className="flex h-full animate-pulse flex-col items-center rounded-lg bg-white p-4 shadow-sm dark:bg-neutral-800">
+      <div className="flex grow flex-col items-center">
         {/* Avatar */}
         <div className="h-16 w-16 rounded-full bg-neutral-300 dark:bg-neutral-700" />
 
         {/* Name */}
-        <div className="mt-3 h-5 w-26 rounded bg-neutral-300 dark:bg-neutral-700" />
+        <div className="mt-3 h-5 w-24 rounded bg-neutral-300 dark:bg-neutral-700" />
 
         {/* Username */}
-        <div className="mt-2 h-4 w-22 rounded bg-blue-500 dark:bg-blue-300" />
+        <div className="mt-2 h-4 w-20 rounded bg-blue-500 dark:bg-blue-300" />
 
-        {/* Bio */}
+        {/* Bio (2 lines) */}
         <div className="mt-3 h-4 w-32 rounded bg-neutral-300 dark:bg-neutral-700" />
-        <div className="mt-1 h-4 w-32 rounded bg-neutral-300 dark:bg-neutral-700" />
+        <div className="mt-1 h-4 w-28 rounded bg-neutral-300 dark:bg-neutral-700" />
       </div>
 
       {/* Followers / Following */}
